@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jarvis HUD Preview</title>
+<!-- Preview only: apps self-host these fonts (docs/02-typography.md). Cascadia Mono ships with Windows. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Orbitron:wght@500;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/hud.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; padding: var(--space-4); }
+
+  .topbar {
+    display: flex; align-items: center; gap: var(--space-4);
+    padding: var(--space-2) var(--space-3); margin-bottom: var(--space-3);
+  }
+  .topbar .mark {
+    font-family: var(--font-display); font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-label); color: var(--color-accent); font-size: var(--text-lg);
+  }
+  .topbar .spacer { flex: 1; }
+  .topbar .clock { color: var(--color-highlight); font-size: var(--text-lg); }
+
+  .grid { display: grid; gap: var(--space-2); grid-template-columns: repeat(12, 1fr); }
+  .span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; }
+  .span-5 { grid-column: span 5; } .span-6 { grid-column: span 6; }
+  .span-7 { grid-column: span 7; } .span-8 { grid-column: span 8; } .span-12 { grid-column: span 12; }
+  @media (max-width: 1199px) { .grid > * { grid-column: span 6; } }
+  @media (max-width: 767px)  { .grid > * { grid-column: span 12; } }
+
+  .panel { padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
+  .row { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); }
+  .muted { color: var(--color-text-muted); font-size: var(--text-xs); }
+  .delta { color: var(--color-text-muted); font-size: var(--text-xs); }
+  .delta.up { color: var(--color-highlight); }
+
+  /* Ring gauge */
+  .gauge { position: relative; width: 160px; height: 160px; margin: 0 auto; }
+  .gauge svg { width: 100%; height: 100%; }
+  .gauge .center {
+    position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
+  }
+  .gauge .track { stroke: var(--color-divider); }
+  .gauge .val {
+    stroke: var(--color-highlight); stroke-linecap: butt;
+    animation: draw-line var(--duration-boot) var(--ease-enter) both;
+  }
+  .gauge .ticks line { stroke: var(--color-border-strong); stroke-width: 1; }
+
+  /* Segmented bar */
+  .segbar { display: grid; grid-template-columns: repeat(20, 1fr); gap: 2px; height: 10px; }
+  .segbar i { background: var(--color-divider); }
+  .segbar i.on { background: var(--color-accent); }
+  .segbar i.hot { background: var(--color-status-warning); }
+
+  /* Sparkline */
+  .spark { width: 100%; height: 48px; }
+  .spark path.line {
+    fill: none; stroke: var(--color-highlight); stroke-width: var(--line-thin);
+    --path-length: 600; stroke-dasharray: 600;
+    animation: draw-line var(--duration-boot) var(--ease-enter) both;
+  }
+  .spark path.area { fill: var(--color-highlight-soft); stroke: none; }
+  .spark circle { fill: var(--color-highlight); }
+
+  /* Status list */
+  table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+  th { text-align: left; padding: var(--space-1) var(--space-2); border-bottom: var(--line-hair) solid var(--color-border); }
+  td { padding: 0 var(--space-2); height: 28px; border-bottom: var(--line-hair) solid var(--color-divider); }
+  tr:hover td { background: var(--color-accent-soft); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .st { font-family: var(--font-display); font-size: var(--text-2xs); letter-spacing: var(--tracking-wide); white-space: nowrap; }
+  .st-ok      { color: var(--color-status-ok); }
+  .st-pending { color: var(--color-status-pending); }
+  .st-idle    { color: var(--color-status-idle); }
+  .st-warn    { color: var(--color-status-warning); }
+  .st-danger  { color: var(--color-danger-text); }
+
+  /* Buttons and inputs */
+  .controls { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+  .btn {
+    height: 28px; padding: 0 var(--space-3); border-radius: var(--radius-sm);
+    font-family: var(--font-display); font-size: var(--text-2xs); font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide); text-transform: uppercase; cursor: pointer;
+    border: var(--line-hair) solid transparent; background: none; color: var(--color-text);
+    transition: background var(--duration-fast) var(--ease-standard),
+                border-color var(--duration-fast) var(--ease-standard),
+                box-shadow var(--duration-fast) var(--ease-standard),
+                color var(--duration-fast) var(--ease-standard);
+  }
+  .btn-primary { height: 32px; background: var(--color-accent); color: var(--color-on-accent); }
+  .btn-primary:hover { background: var(--color-accent-hover); box-shadow: var(--glow-sm); }
+  .btn-secondary { background: var(--color-accent-soft); border-color: var(--color-border-strong); color: var(--color-accent); }
+  .btn-secondary:hover { border-color: var(--color-accent); }
+  .btn-ghost { border-color: var(--color-divider); color: var(--color-text-muted); }
+  .btn-ghost:hover { border-color: var(--color-border-strong); color: var(--color-accent); }
+  .btn-danger { background: var(--color-danger-fill); border-color: var(--color-danger-border); color: var(--color-danger-text); }
+  .btn-danger:hover { box-shadow: var(--glow-danger); }
+  .btn:disabled { opacity: 0.4; box-shadow: none; cursor: not-allowed; }
+
+  .field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 200px; flex: 1; }
+  .input {
+    height: 28px; padding: 0 var(--space-2); border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.04); border: var(--line-hair) solid var(--color-border);
+    color: var(--color-text); font-family: var(--font-mono); font-size: var(--text-sm);
+    transition: border-color var(--duration-fast) var(--ease-standard);
+  }
+  .input:focus { border-color: var(--color-border-strong); }
+
+  .toggle {
+    width: 36px; height: 18px; border: var(--line-hair) solid var(--color-border-strong);
+    border-radius: var(--radius-sm); background: var(--color-accent-soft); position: relative; cursor: pointer;
+  }
+  .toggle::after {
+    content: ""; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px;
+    background: var(--color-text-muted); border-radius: 1px;
+    transition: transform var(--duration-normal) var(--ease-standard), background var(--duration-normal);
+  }
+  .toggle[aria-checked="true"]::after { transform: translateX(18px); background: var(--color-highlight); }
+
+  /* Toast */
+  .toast {
+    padding: var(--space-2) var(--space-3); border-left: var(--line-bold) solid var(--color-status-danger);
+    font-size: var(--text-sm); display: flex; gap: var(--space-2); align-items: baseline;
+  }
+  .toast p { font-family: var(--font-sans); }
+
+  /* Reference sheet */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--space-2); }
+  .sw { height: 56px; border: var(--line-hair) solid var(--color-divider); display: flex; align-items: flex-end; padding: var(--space-1); }
+  .sw span { font-size: var(--text-2xs); background: rgba(6, 4, 4, 0.75); padding: 1px 3px; }
+  .type-row { display: flex; align-items: baseline; gap: var(--space-4); border-bottom: var(--line-hair) solid var(--color-divider); padding: var(--space-1) 0; }
+  .type-row code { width: 90px; color: var(--color-text-dim); font-size: var(--text-xs); flex-shrink: 0; }
+  .prose { font-family: var(--font-sans); font-size: var(--text-md); color: var(--color-text-muted); max-width: 60ch; }
+  .diamond { display: inline-block; }
+</style>
+</head>
+<body class="hud-root hud-grid-bg">
+
+<header class="topbar glass hud-boot">
+  <span class="hud-corner hud-corner--tl"></span><span class="hud-corner hud-corner--tr"></span>
+  <span class="hud-corner hud-corner--bl"></span><span class="hud-corner hud-corner--br"></span>
+  <span class="mark">J.A.R.V.I.S</span>
+  <span class="hud-label">PC Server // Node 01</span>
+  <span class="spacer"></span>
+  <span class="st st-ok">◆ ALL SYSTEMS NOMINAL</span>
+  <span class="clock tabular" id="clock">--:--:--</span>
+</header>
+
+<main class="grid">
+
+  <!-- Hero gauge -->
+  <section class="glass panel span-4 hud-enter" style="--i:0">
+    <span class="hud-corner hud-corner--tl"></span><span class="hud-corner hud-corner--tr"></span>
+    <span class="hud-corner hud-corner--bl"></span><span class="hud-corner hud-corner--br"></span>
+    <div class="row"><span class="hud-label">GPU Load</span><span class="muted">RTX // 24 GB</span></div>
+    <div class="gauge">
+      <svg viewBox="0 0 160 160" aria-hidden="true">
+        <g class="hud-ring-spin" style="transform-origin: 80px 80px">
+          <circle cx="80" cy="80" r="76" fill="none" stroke="rgba(184,115,51,0.18)" stroke-width="1" stroke-dasharray="2 6"/>
+        </g>
+        <!-- 270deg arc: circumference of r=62 is 389.6, 75% = 292.2 -->
+        <circle class="track" cx="80" cy="80" r="62" fill="none" stroke-width="2"
+                stroke-dasharray="292.2 389.6" transform="rotate(135 80 80)"/>
+        <circle class="val" cx="80" cy="80" r="62" fill="none" stroke-width="3"
+                style="--path-length: 210.4" stroke-dasharray="210.4 389.6" transform="rotate(135 80 80)"/>
+        <g class="ticks" id="ticks"></g>
+      </svg>
+      <div class="center">
+        <div class="hud-value hud-value--hero">72<span class="hud-unit">%</span></div>
+        <div class="hud-label">Utilisation</div>
+      </div>
+    </div>
+    <div class="row"><span class="hud-label">VRAM</span><span class="tabular">17.3 / 24.0 GB</span></div>
+    <div class="segbar" id="segbar" aria-label="VRAM 72%"></div>
+  </section>
+
+  <!-- Readouts -->
+  <section class="glass panel span-4 hud-enter" style="--i:1">
+    <span class="hud-corner hud-corner--tl"></span><span class="hud-corner hud-corner--tr"></span>
+    <span class="hud-corner hud-corner--bl"></span><span class="hud-corner hud-corner--br"></span>
+    <div class="hud-label">Inference Throughput</div>
+    <div class="row">
+      <div class="hud-value">48.6<span class="hud-unit">tok/s</span></div>
+      <span class="delta up">▲ 4.2</span>
+    </div>
+    <svg class="spark" viewBox="0 0 300 48" preserveAspectRatio="none" aria-hidden="true">
+      <path class="area" d="M0 40 L25 34 L50 36 L75 28 L100 30 L125 22 L150 26 L175 18 L200 20 L225 14 L250 17 L275 10 L300 12 L300 48 L0 48 Z"/>
+      <path class="line" d="M0 40 L25 34 L50 36 L75 28 L100 30 L125 22 L150 26 L175 18 L200 20 L225 14 L250 17 L275 10 L300 12"/>
+      <circle cx="298" cy="12" r="2.5"/>
+    </svg>
+    <div class="row">
+      <div><div class="hud-label">CPU</div><div class="tabular" style="font-size:var(--text-2xl);font-weight:var(--weight-light)">31.0<span class="hud-unit">%</span></div></div>
+      <div><div class="hud-label">RAM</div><div class="tabular" style="font-size:var(--text-2xl);font-weight:var(--weight-light)">41.8<span class="hud-unit">GB</span></div></div>
+      <div><div class="hud-label">Temp</div><div class="tabular" style="font-size:var(--text-2xl);font-weight:var(--weight-light);color:var(--color-status-warning)">78<span class="hud-unit">°C</span></div></div>
+    </div>
+  </section>
+
+  <!-- Radar -->
+  <section class="glass panel span-4 hud-enter" style="--i:2">
+    <span class="hud-corner hud-corner--tl"></span><span class="hud-corner hud-corner--tr"></span>
+    <span class="hud-corner hud-corner--bl"></span><span class="hud-corner hud-corner--br"></span>
+    <div class="row"><span class="hud-label">Network Scan</span><span class="st st-pending hud-pulse">◇ SCANNING</span></div>
+    <div style="position:relative;width:160px;height:160px;margin:0 auto;">
+      <svg viewBox="0 0 160 160" width="160" height="160" aria-hidden="true">
+        <circle cx="80" cy="80" r="76" fill="none" stroke="var(--color-border)"/>
+        <circle cx="80" cy="80" r="50" fill="none" stroke="var(--color-divider)"/>
+        <circle cx="80" cy="80" r="24" fill="none" stroke="var(--color-divider)"/>
+        <line x1="4" y1="80" x2="156" y2="80" stroke="var(--color-divider)"/>
+        <line x1="80" y1="4" x2="80" y2="156" stroke="var(--color-divider)"/>
+        <rect x="108" y="46" width="5" height="5" transform="rotate(45 110.5 48.5)" fill="var(--color-highlight)"/>
+        <rect x="44" y="98" width="5" height="5" transform="rotate(45 46.5 100.5)" fill="var(--color-highlight)"/>
+        <rect x="96" y="118" width="5" height="5" fill="none" stroke="var(--color-status-idle)"/>
+        <g stroke="var(--color-contrast-accent)" stroke-width="1" fill="none">
+          <circle cx="110.5" cy="48.5" r="8"/>
+          <line x1="98" y1="48.5" x2="102" y2="48.5"/><line x1="119" y1="48.5" x2="123" y2="48.5"/>
+          <line x1="110.5" y1="36" x2="110.5" y2="40"/><line x1="110.5" y1="57" x2="110.5" y2="61"/>
+        </g>
+      </svg>
+      <div class="hud-scan-line"></div>
+    </div>
+    <div class="row"><span class="hud-label">Hosts</span><span class="tabular"><span style="color:var(--color-contrast-accent)">⌖ node-02</span> · node-03 · <span style="color:var(--color-status-idle)">node-04</span></span></div>
+  </section>
+
+  <!-- Service table -->
+  <section class="glass panel span-7 hud-enter" style="--i:3">
+    <span class="hud-corner hud-corner--tl"></span><span class="hud-corner hud-corner--tr"></span>
+    <span class="hud-corner hud-corner--bl"></span><span class="hud-corner hud-corner--br"></span>
+    <h2 class="hud-heading">Services</h2>
+    <table>
+      <thead><tr><th class="hud-label">Service</th><th class="hud-label">State</th><th class="hud-label num">Port</th><th class="hud-label num">Uptime</th><th class="hud-label num">Mem</th></tr></thead>
+      <tbody>
+        <tr><td>ollama</td><td class="st st-ok">◆ RUNNING</td><td class="num">11434</td><td class="num">4d 06:12</td><td class="num">9.2 GB</td></tr>
+        <tr><td>comfyui</td><td class="st st-pending"><span class="hud-pulse diamond">◇</span> STARTING</td><td class="num">8188</td><td class="num">00:00:14</td><td class="num">1.1 GB</td></tr>
+        <tr><td>whisper</td><td class="st st-idle">□ STOPPED</td><td class="num">9000</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>plox</td><td class="st st-warn">▲ DEGRADED</td><td class="num">3100</td><td class="num">12d 01:40</td><td class="num">0.4 GB</td></tr>
+        <tr><td>tts-server</td><td class="st st-danger">■ FAILED</td><td class="num">5002</td><td class="num">—</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Controls -->
+  <section class="glass panel span-5 hud-enter" style="--i:4">
+    <span class="hud-corner hud-corner--tl"></span><span class="hud-corner hud-corner--tr"></span>
+    <span class="hud-corner hud-corner--bl"></span><span class="hud-corner hud-corner--br"></span>
+    <h2 class="hud-heading">Controls</h2>
+    <div class="controls">
+      <button class="btn btn-primary">Start all</button>
+      <button class="btn btn-secondary">Restart</button>
+      <button class="btn btn-ghost">Logs</button>
+      <button class="btn btn-danger">Stop service</button>
+      <button class="btn btn-secondary" disabled>Disabled</button>
+    </div>
+    <div class="controls">
+      <label class="field"><span class="hud-label">Model</span><input class="input" value="qwen3:32b"></label>
+      <label class="field" style="flex:0 0 auto;min-width:0"><span class="hud-label">Auto-start</span>
+        <span class="toggle" role="switch" aria-checked="true" tabindex="0" id="toggle"></span></label>
+    </div>
+    <div class="toast glass">
+      <span class="st st-danger">■</span>
+      <p>tts-server didn't respond on :5002. Check the Python env and restart.</p>
+    </div>
+  </section>
+
+  <!-- Reference: palette -->
+  <section class="glass panel span-6 hud-enter" style="--i:5">
+    <h2 class="hud-heading">Palette</h2>
+    <div class="swatches" id="swatches"></div>
+  </section>
+
+  <!-- Reference: type -->
+  <section class="glass panel span-6 hud-enter" style="--i:6">
+    <h2 class="hud-heading">Type</h2>
+    <div class="type-row"><code>display</code><span class="hud-label" style="color:var(--color-text)">Uppercase label // 0.18em</span></div>
+    <div class="type-row"><code>mono 3xl</code><span class="hud-value">1,284.07</span></div>
+    <div class="type-row"><code>mono md</code><span>Cascadia Mono, the default UI voice. 0123456789</span></div>
+    <div class="type-row"><code>sans md</code><span class="prose" style="color:var(--color-text)">Inter for longer prose that people actually read.</span></div>
+    <p class="prose" style="margin-top:var(--space-2)">Hover a panel to see its brackets lock on. With reduced motion turned on, every loop and transition stops.</p>
+  </section>
+
+</main>
+
+<script>
+  // Gauge ticks every 10% across the 270deg arc
+  const ticks = document.getElementById('ticks');
+  for (let i = 0; i <= 10; i++) {
+    const a = (135 + i * 27) * Math.PI / 180;
+    const r1 = 67, r2 = i % 5 === 0 ? 73 : 70;
+    const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', 80 + r1 * Math.cos(a)); l.setAttribute('y1', 80 + r1 * Math.sin(a));
+    l.setAttribute('x2', 80 + r2 * Math.cos(a)); l.setAttribute('y2', 80 + r2 * Math.sin(a));
+    ticks.appendChild(l);
+  }
+
+  // Segmented bar: 72% of 20 segments, last on-segments warm
+  const seg = document.getElementById('segbar');
+  for (let i = 0; i < 20; i++) {
+    const s = document.createElement('i');
+    if (i < 14) s.className = i >= 12 ? 'hot' : 'on';
+    seg.appendChild(s);
+  }
+
+  // Palette swatches read straight from tokens.css
+  const names = ['neutral-950','neutral-800','neutral-500','neutral-100','copper-600','copper-500','copper-300',
+                 'gold-600','gold-500','gold-300','silver-600','silver-400','red-700','red-500','red-400','ember-500',
+                 'chartreuse-500','arc-400'];
+  const css = getComputedStyle(document.documentElement);
+  const sw = document.getElementById('swatches');
+  for (const n of names) {
+    const v = css.getPropertyValue('--palette-' + n).trim();
+    const d = document.createElement('div');
+    d.className = 'sw'; d.style.background = v;
+    d.innerHTML = '<span>' + n + '<br>' + v + '</span>';
+    sw.appendChild(d);
+  }
+
+  const toggle = document.getElementById('toggle');
+  const flip = () => toggle.setAttribute('aria-checked', toggle.getAttribute('aria-checked') !== 'true');
+  toggle.addEventListener('click', flip);
+  toggle.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } });
+
+  const clock = document.getElementById('clock');
+  const tick = () => clock.textContent = new Date().toLocaleTimeString('en-GB', { hour12: false });
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>

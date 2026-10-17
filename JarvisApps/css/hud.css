@@ -1,0 +1,187 @@
+/*
+ * Jarvis HUD primitives: keyframes and utility classes shared by every app.
+ * Requires tokens/tokens.css. Rules for each class: docs/04-components.md, docs/05-motion.md.
+ * Most of these come from Desktop-Widgets' global.css, moved onto tokens.
+ */
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+
+.hud-root {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+.hud-root ::selection { background: var(--color-selection); }
+
+/* Faint grid behind the whole app. Optional, never behind text-heavy pages. */
+.hud-grid-bg {
+  background-color: var(--color-bg);
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(184, 115, 51, 0.08), transparent 60%),
+    linear-gradient(rgba(222, 210, 198, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(222, 210, 198, 0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 24px 24px, 24px 24px;
+}
+
+:focus-visible {
+  outline: var(--line-thin) solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ── Glass panels ──────────────────────────────────────────────────────── */
+
+.glass {
+  position: relative;
+  background: var(--color-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    background var(--duration-normal) var(--ease-standard),
+    border-color var(--duration-normal) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-standard);
+}
+
+.glass:hover,
+.glass.is-active {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--glow-md);
+}
+
+/* Over the desktop wallpaper (Desktop-Widgets) */
+.glass--overlay { background: var(--color-surface-overlay); }
+.glass--overlay:hover,
+.glass--overlay.is-active { background: var(--color-surface-overlay-hover); }
+
+/* Clipped top-left and bottom-right corners. clip-path also clips borders, glows and
+   children (brackets included), so put .chamfer on an inner element and keep any
+   brackets on the unclipped wrapper. */
+.chamfer {
+  border-radius: 0;
+  clip-path: polygon(
+    var(--chamfer-md) 0, 100% 0,
+    100% calc(100% - var(--chamfer-md)), calc(100% - var(--chamfer-md)) 100%,
+    0 100%, 0 var(--chamfer-md)
+  );
+}
+
+/* ── Corner brackets ───────────────────────────────────────────────────── */
+/* Markup: four <span class="hud-corner hud-corner--tl|tr|bl|br"> inside a positioned parent. */
+
+.hud-corner {
+  position: absolute;
+  width: var(--bracket-size);
+  height: var(--bracket-size);
+  pointer-events: none;
+  opacity: 0.45;
+  border: 0 solid var(--color-accent);
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+.hud-corner--tl { top: -1px;    left: -1px;  border-top-width: var(--line-thin);    border-left-width: var(--line-thin); }
+.hud-corner--tr { top: -1px;    right: -1px; border-top-width: var(--line-thin);    border-right-width: var(--line-thin); }
+.hud-corner--bl { bottom: -1px; left: -1px;  border-bottom-width: var(--line-thin); border-left-width: var(--line-thin); }
+.hud-corner--br { bottom: -1px; right: -1px; border-bottom-width: var(--line-thin); border-right-width: var(--line-thin); }
+
+:hover > .hud-corner,
+.is-active > .hud-corner {
+  opacity: 1;
+  animation: bracket-lock var(--duration-normal) var(--ease-enter) both;
+}
+
+/* ── Type ──────────────────────────────────────────────────────────────── */
+
+.hud-label {
+  font-family: var(--font-display);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.hud-heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-accent);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--line-hair) solid var(--color-border);
+}
+
+.hud-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-none);
+  color: var(--color-highlight);
+}
+.hud-value--hero { font-size: var(--text-4xl); text-shadow: var(--text-glow); }
+
+.hud-unit {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-left: 0.25em;
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* ── Motion ────────────────────────────────────────────────────────────── */
+
+.hud-boot  { animation: hud-flicker var(--duration-boot) var(--ease-enter) both; }
+.hud-enter { animation: fade-in var(--duration-slow) var(--ease-enter) both;
+             animation-delay: calc(var(--i, 0) * var(--stagger)); }
+.hud-pulse { animation: pulse var(--loop-pulse) ease-in-out infinite; }
+
+.hud-scan-line {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 340deg, rgba(212, 160, 23, 0.22) 360deg);
+  animation: spin var(--loop-scan) linear infinite;
+  pointer-events: none;
+}
+
+.hud-ring-spin { animation: spin var(--loop-ring) linear infinite; transform-origin: center; }
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes hud-flicker {
+  0%   { opacity: 0; }
+  5%   { opacity: 0.8; }
+  6%   { opacity: 0.2; }
+  8%   { opacity: 0.9; }
+  10%  { opacity: 0.4; }
+  12%, 100% { opacity: 1; }
+}
+
+@keyframes bracket-lock {
+  from { opacity: 0; transform: scale(1.15); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes draw-line {
+  from { stroke-dashoffset: var(--path-length, 1000); }
+  to   { stroke-dashoffset: 0; }
+}
