@@ -10,7 +10,7 @@ Status: proposed. The "no green, blue or cyan" and "OK is gold" parts are supers
 - Red is only for danger and critical states.
 - Warning uses a new ember orange (`#f07a2a`). There is no green, blue or cyan anywhere,
   including "OK" status, which is gold.
-- Status always pairs colour with a shape (◆ ◇ □ ▲ ■).
+- Status always pairs colour with a shape (◆ ◇ □ ▲ ■; the stopped square became a flat bar ▬ in 0009).
 
 ## Why
 - The user listed red first, but red as the accent would make alarms blend in with ordinary

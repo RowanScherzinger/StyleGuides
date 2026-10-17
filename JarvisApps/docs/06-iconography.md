@@ -22,7 +22,7 @@ Beyond icons, the HUD look depends on a small set of geometric marks. Draw them 
 
 | Glyph | Meaning |
 |---|---|
-| ◆ ◇ □ ▲ ■ | Status shapes (see `01-color.md`) |
+| ◆ ◇ ▬ ▲ ■ | Status shapes (see `01-color.md`) |
 | Corner brackets | Focus or targeting, panel frame |
 | Tick ruler | A scale on gauges and chart edges |
 | Arc / ring segment | A percentage, a gauge, loading |

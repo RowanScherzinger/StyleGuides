@@ -48,7 +48,7 @@ so it reads at a glance and without colour vision.
 |---|---|---|---|
 | Running / OK | `--color-status-ok` (chartreuse) | Filled diamond ◆ | Steady |
 | Starting / pending | `--color-status-pending` (pale gold) | Hollow diamond ◇ | Slow pulse |
-| Stopped / idle | `--color-status-idle` (grey silver) | Hollow square □ | None, dimmed |
+| Stopped / idle | `--color-status-idle` (grey silver) | Flat bar ▬ (an unlit LED segment) | None, dimmed |
 | Warning | `--color-status-warning` (ember) | Triangle ▲ | None |
 | Error / failed | `--color-status-danger` (crimson) | Filled square ■ | One pulse on entry, then steady |
 | Info | `--color-info` (arc blue) | Circle ● | None |
