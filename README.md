@@ -7,6 +7,10 @@ that apps copy from.
 | Guide | Look | For |
 |---|---|---|
 | [`JarvisApps/`](JarvisApps/README.md) | Iron Man style HUD: dark only, warm metallics, glass, monospace readouts | Home-lab dashboards and tools (web and Electron) |
+| [`PastelGirl/`](PastelGirl/README.md) | Very cute, soft and round: pinks and creams, dark by default with a light variant, frosted round cards, pills, hearts and sparkles | Planned: an optional theme in iPhone Explorer |
+
+Guides are independent. Each app names the guide it follows in its own `CLAUDE.md` (or the
+guides it offers, if it lets the user pick a theme).
 
 ## Layout of a guide
 

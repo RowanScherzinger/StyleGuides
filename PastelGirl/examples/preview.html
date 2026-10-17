@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pastel Girl Preview</title>
+<!-- Google Fonts are for this preview only; apps self-host or rely on the fallbacks. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/soft.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--color-bg); }
+  .page { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-4) var(--space-16); }
+  header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-6); }
+  header h1 { font-family: var(--font-display); font-weight: var(--weight-semibold); font-size: var(--text-2xl); margin: 0; display: flex; align-items: center; gap: var(--space-2); }
+  header h1 .sparkle { color: var(--color-accent); font-size: 0.7em; }
+  .time { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .grid { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } .span-2 { grid-column: span 2; } }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+  .stack { display: flex; flex-direction: column; gap: var(--space-3); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+
+  /* Ring progress */
+  .ring-wrap { display: flex; align-items: center; gap: var(--space-6); }
+  .ring { position: relative; width: 140px; height: 140px; flex: none; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .track { stroke: var(--color-track); }
+  .ring .fill { stroke: var(--color-accent); stroke-linecap: round; transition: stroke-dashoffset var(--duration-slow) var(--ease-soft); }
+  .ring .center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+
+  /* Status list */
+  .list { list-style: none; margin: 0; padding: 0; }
+  .list li { display: flex; align-items: center; gap: var(--space-3); min-height: 44px; padding: 0 var(--space-3); border-radius: var(--radius-md); }
+  .list li:hover { background: var(--color-accent-soft); }
+  .list .name { flex: 1; }
+  .list .when { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-dim); }
+  .glyph { width: 1.25em; text-align: center; font-size: var(--text-md); display: inline-grid; place-items: center; }
+  .glyph-svg { width: 1.1em; height: 1.1em; }
+  .s-ok { color: var(--color-status-ok); }
+  .s-pending { color: var(--color-status-pending); }
+  .s-idle { color: var(--color-status-idle); }
+  .s-warning { color: var(--color-status-warning); }
+  .s-danger { color: var(--color-status-danger); }
+  .s-info { color: var(--color-info); }
+
+  /* Bars */
+  .bars { display: flex; align-items: flex-end; gap: var(--space-2); height: 120px; }
+  .bars div { flex: 1; border-radius: var(--radius-full); background: var(--color-series-muted); }
+  .bars div.now { background: var(--color-accent); box-shadow: var(--glow-pink); }
+  .bar-labels { display: flex; gap: var(--space-2); margin-top: var(--space-2); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .bar-labels span { flex: 1; text-align: center; }
+
+  /* Progress bar */
+  .progress { height: 10px; border-radius: var(--radius-full); background: var(--color-track); overflow: hidden; }
+  .progress > span { display: block; height: 100%; border-radius: inherit; background: var(--color-secondary); }
+
+  /* Inputs */
+  label.field { display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .input { font: inherit; color: var(--color-text); background: var(--color-surface-sunken); border: var(--line-hair) solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); transition: border-color var(--duration-fast) var(--ease-soft); }
+  .input::placeholder { color: var(--color-text-dim); }
+  .input:focus-visible { border-color: var(--color-border-strong); }
+
+  /* Toggle */
+  .toggle { position: relative; width: 48px; height: 28px; border-radius: var(--radius-full); border: 0; background: var(--color-track); cursor: pointer; transition: background var(--duration-normal) var(--ease-soft); }
+  .toggle::after { content: ""; position: absolute; top: 4px; left: 4px; width: 20px; height: 20px; border-radius: 50%; background: var(--color-hardware); box-shadow: var(--shadow-sm); transition: transform var(--duration-normal) var(--ease-bounce), background var(--duration-normal) var(--ease-soft); }
+  .toggle[aria-checked="true"] { background: var(--color-accent); }
+  .toggle[aria-checked="true"]::after { transform: translateX(20px); background: var(--palette-cream-50); }
+
+  /* Toast */
+  .toast { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-5); border-radius: var(--radius-lg); background: var(--color-surface-raised); border: var(--line-hair) solid var(--color-border); box-shadow: var(--shadow-lg); }
+
+  /* Swatches */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: var(--space-3); }
+  .sw { border-radius: var(--radius-md); overflow: hidden; border: var(--line-hair) solid var(--color-divider); font-size: var(--text-xs); }
+  .sw i { display: block; height: 48px; }
+  .sw b { display: block; padding: var(--space-2); font-weight: var(--weight-semibold); }
+  .sw code { font-family: var(--font-mono); color: var(--color-text-dim); }
+
+  .float-sparkle { position: fixed; right: 6%; top: 18%; font-size: 28px; color: var(--color-secondary); opacity: 0.35; pointer-events: none; }
+</style>
+</head>
+<body class="soft-root">
+<span class="float-sparkle sparkle soft-float" aria-hidden="true"></span>
+<div class="page">
+  <header>
+    <h1><span class="sparkle soft-twinkle" aria-hidden="true"></span>Good evening</h1>
+    <div class="row"><span class="time">fri 17 oct · 21:04</span>
+      <button class="btn btn--ghost" id="theme" aria-label="Switch to light">Light mode</button></div>
+  </header>
+
+  <div class="grid">
+    <section class="card span-2 soft-enter" style="--i:0">
+      <div class="card-head">
+        <span class="soft-eyebrow">This week</span>
+        <span class="chip"><span class="sparkle" aria-hidden="true"></span> 5 day streak</span>
+      </div>
+      <div class="ring-wrap">
+        <div class="ring">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="track" cx="60" cy="60" r="50" fill="none" stroke-width="10"/>
+            <circle class="fill" cx="60" cy="60" r="50" fill="none" stroke-width="10" stroke-dasharray="314.16" stroke-dashoffset="87.96"/>
+          </svg>
+          <div class="center"><span class="soft-value">72<span class="soft-unit">%</span></span></div>
+        </div>
+        <div class="stack">
+          <h2 class="soft-title">Reading goal</h2>
+          <p class="soft-muted" style="margin:0">18 of 25 chapters. Seven more and the week is done.</p>
+          <div class="row"><button class="btn btn--primary">Log a chapter</button><button class="btn btn--soft">See history</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card soft-enter" style="--i:1">
+      <div class="card-head"><span class="soft-eyebrow">Saved</span></div>
+      <span class="soft-value soft-value--hero">1,240<span class="soft-unit">g</span></span>
+      <p class="soft-muted">Less food waste than last month.</p>
+      <div class="progress" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100"><span style="width:64%"></span></div>
+    </section>
+
+    <section class="card soft-enter" style="--i:2">
+      <div class="card-head"><h2 class="soft-title">Status</h2></div>
+      <ul class="list">
+        <li><span class="glyph s-ok soft-wiggle"><svg class="glyph-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.3 5.3 3.2 1.7-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="currentColor"/></svg></span><span class="name">Backup finished</span><span class="when">20:41</span></li>
+        <li><span class="glyph s-pending soft-pulse" aria-hidden="true">☾</span><span class="name">Syncing photos</span><span class="when">now</span></li>
+        <li><span class="glyph s-idle"><svg class="glyph-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.3 5.3 3.2 1.7-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span><span class="name">Media server off</span><span class="when">—</span></li>
+        <li><span class="glyph s-warning"><svg class="glyph-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 4.2a2 2 0 0 1 3.4 0l7.6 13a2 2 0 0 1-1.7 3H4.4a2 2 0 0 1-1.7-3z" fill="currentColor"/><path d="M12 9v4.5M12 16.8v.1" stroke="var(--color-bg)" stroke-width="2.2" stroke-linecap="round"/></svg></span><span class="name">Disk 86% full</span><span class="when">19:12</span></li>
+        <li><span class="glyph s-danger soft-wiggle"><svg class="glyph-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.3 5.3 3.2 1.7-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="currentColor"/><path d="M12.6 7.2 10.4 11l3 2-2 4.2" fill="none" stroke="var(--color-bg)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="name">Oops, that key didn't work</span><span class="when">18:03</span></li>
+        <li><span class="glyph s-info" aria-hidden="true">●</span><span class="name">Update available</span><span class="when">today</span></li>
+      </ul>
+    </section>
+
+    <section class="card soft-enter" style="--i:3">
+      <div class="card-head"><h2 class="soft-title">Minutes read</h2><span class="soft-eyebrow">Daily</span></div>
+      <div class="bars" aria-hidden="true">
+        <div style="height:40%"></div><div style="height:65%"></div><div style="height:30%"></div><div style="height:80%"></div><div class="now" style="height:95%"></div><div style="height:20%"></div><div style="height:10%"></div>
+      </div>
+      <div class="bar-labels"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+    </section>
+
+    <section class="card soft-enter" style="--i:4">
+      <div class="card-head"><h2 class="soft-title">Controls</h2></div>
+      <div class="stack">
+        <label class="field">Name your list<input class="input" placeholder="Weekend treats"></label>
+        <div class="row" style="justify-content:space-between">
+          <span>Night reminders</span>
+          <button class="toggle" role="switch" aria-checked="true" aria-label="Night reminders" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true')"></button>
+        </div>
+        <hr class="chain">
+        <div class="row">
+          <span class="chip chip--solid">All</span><span class="chip">★ Favourites</span><span class="chip chip--lilac">Later</span>
+        </div>
+        <div class="row"><button class="btn btn--ghost">Cancel</button><button class="btn btn--danger">Delete list</button></div>
+      </div>
+    </section>
+
+    <section class="card soft-enter" style="--i:5">
+      <div class="card-head"><h2 class="soft-title">Toast</h2></div>
+      <div class="toast"><span class="glyph s-ok soft-boop"><svg class="glyph-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.3 5.3 3.2 1.7-1.9 3.1-3.2 5.3-3.2 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z" fill="currentColor"/></svg></span><span>Yay, recipe saved!</span></div>
+      <div class="well" style="margin-top:var(--space-4)">
+        <div class="soft-eyebrow">Empty state</div>
+        <p style="margin:var(--space-2) 0 0" class="soft-muted"><span class="sparkle" aria-hidden="true"></span> Nothing here yet. Shall we add your first one?</p>
+      </div>
+    </section>
+
+    <section class="card span-2 soft-enter" style="--i:6">
+      <div class="card-head"><h2 class="soft-title">Palette</h2><span class="soft-eyebrow">Pinks and creams lead</span></div>
+      <div class="swatches">
+        <div class="sw"><i style="background:var(--palette-pink-500)"></i><b>Pink <code>500</code></b></div>
+        <div class="sw"><i style="background:var(--palette-pink-300)"></i><b>Pink <code>300</code></b></div>
+        <div class="sw"><i style="background:var(--palette-pink-700)"></i><b>Pink <code>700</code></b></div>
+        <div class="sw"><i style="background:var(--palette-cream-100)"></i><b>Cream <code>100</code></b></div>
+        <div class="sw"><i style="background:var(--palette-cream-300)"></i><b>Cream <code>300</code></b></div>
+        <div class="sw"><i style="background:var(--palette-plum-950)"></i><b>Plum <code>950</code></b></div>
+        <div class="sw"><i style="background:var(--palette-plum-700)"></i><b>Plum <code>700</code></b></div>
+        <div class="sw"><i style="background:var(--palette-lilac-500)"></i><b>Lilac</b></div>
+        <div class="sw"><i style="background:var(--palette-mint-500)"></i><b>Mint</b></div>
+        <div class="sw"><i style="background:var(--palette-sky-500)"></i><b>Baby blue</b></div>
+        <div class="sw"><i style="background:var(--palette-butter-500)"></i><b>Butter</b></div>
+        <div class="sw"><i style="background:var(--palette-peach-500)"></i><b>Peach</b></div>
+        <div class="sw"><i style="background:var(--palette-silver-500)"></i><b>Silver</b></div>
+        <div class="sw"><i style="background:var(--palette-cherry-500)"></i><b>Cherry</b></div>
+      </div>
+    </section>
+
+    <section class="card soft-enter" style="--i:7">
+      <div class="card-head"><h2 class="soft-title">Type</h2></div>
+      <div class="stack">
+        <span style="font-family:var(--font-display);font-size:var(--text-2xl);font-weight:600">Fredoka titles</span>
+        <span>Nunito for everything you read, at 15px with roomy line height.</span>
+        <span style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--color-text-muted)">cascadia mono · 21:04:33</span>
+      </div>
+    </section>
+  </div>
+</div>
+<script>
+  // Preview only: switch variants. Apps choose their own way (docs/07-theming.md).
+  const btn = document.getElementById("theme");
+  btn.addEventListener("click", () => {
+    const light = document.documentElement.dataset.theme !== "light";
+    document.documentElement.dataset.theme = light ? "light" : "dark";
+    btn.textContent = light ? "Dark mode" : "Light mode";
+    btn.setAttribute("aria-label", light ? "Switch to dark" : "Switch to light");
+  });
+</script>
+</body>
+</html>

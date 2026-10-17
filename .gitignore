@@ -4,3 +4,4 @@ desktop.ini
 *.tmp
 .vscode/
 .idea/
+__pycache__/

@@ -1,0 +1,309 @@
+/*
+ * Pastel Girl design tokens: the single source of truth.
+ *
+ * Copy this file into an app and use var(--token) everywhere.
+ * Rules for each group live in docs/; reasons live in decisions/.
+ * Dark by default: pastels glow on a plum-black field (decisions/0002).
+ * Light variant: set data-theme="light" on <html> (decisions/0008, block at the end).
+ *
+ * Layers:
+ *   1. Palette   (--palette-*)  raw colours, never used directly in components
+ *   2. Semantic  (--color-*)    roles that components use
+ *   3. Scales    type, space, shape, shadow, motion, z-index
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* ---------- 1. Palette (docs/01-color.md) ---------- */
+
+  /* Plum-black field, mauve mid-tones */
+  --palette-plum-950: #120b12;
+  --palette-plum-900: #1a111b;
+  --palette-plum-850: #221724;
+  --palette-plum-800: #2c1f2f;
+  --palette-plum-700: #3b2a3f;
+  --palette-plum-600: #4f3b54;
+  --palette-plum-500: #6c5671;
+  --palette-plum-400: #a08aa3;
+  --palette-plum-300: #c3adc0;
+
+  /* Cream: text and soft fills */
+  --palette-cream-50:  #fff8f0;
+  --palette-cream-100: #fbefe3;  /* body text */
+  --palette-cream-200: #f3e1cf;
+  --palette-cream-300: #e6cdb6;
+
+  /* Pink: the identity */
+  --palette-pink-700: #8c4466;
+  --palette-pink-600: #c0668f;
+  --palette-pink-500: #f5a3c3;  /* the pink */
+  --palette-pink-400: #f8bcd3;
+  --palette-pink-300: #fbd3e2;
+  --palette-pink-200: #fde6ee;
+
+  /* Guest pastels: small accents, two or three per screen at most */
+  --palette-lilac-500: #c8a8ef;
+  --palette-mint-500:  #a6e7c8;
+  --palette-sky-500:   #a8d4f5;  /* baby blue */
+  --palette-butter-500:#f6e19c;
+  --palette-peach-500: #f9bf9e;
+
+  /* Silver: the hard edge (chains, rings, hardware) */
+  --palette-silver-500: #b9b4c2;
+  --palette-silver-300: #dcd8e3;
+
+  /* Cherry: danger only. Deeper and more saturated than any pink so it never reads as accent. */
+  --palette-cherry-600: #c41a12;
+  --palette-cherry-500: #ff5247;
+  --palette-cherry-400: #ff6a5e;  /* danger text: passes on the danger fill over the haze */
+
+  /* Light variant only: blush field and deep inks that pass on cream */
+  --palette-blush-50:   #fff4ef;
+  --palette-ink-900:    #2a1a2c;
+  --palette-ink-700:    #5e4762;
+  --palette-ink-500:    #7a6280;
+  --palette-pink-ink:   #a83d6f;
+  --palette-lilac-ink:  #7a52b3;
+  --palette-mint-ink:   #1f7550;
+  --palette-butter-ink: #866400;
+  --palette-peach-ink:  #a84c18;
+  --palette-sky-ink:    #2a6fb0;
+  --palette-silver-ink: #8f899a;
+
+  /* ---------- 2. Semantic colour (docs/01-color.md) ---------- */
+
+  --color-bg:          var(--palette-plum-950);
+  --color-bg-elevated: var(--palette-plum-900);
+  /* A faint pink and lilac haze in the corners of the page. Background only. */
+  --color-bg-haze:
+    radial-gradient(60rem 40rem at 0% 0%, rgba(245, 163, 195, 0.10), transparent 60%),
+    radial-gradient(50rem 40rem at 100% 100%, rgba(200, 168, 239, 0.08), transparent 60%);
+
+  /* Soft frosted cards */
+  --color-surface:        rgba(44, 31, 47, 0.62);
+  --color-surface-hover:  rgba(52, 37, 56, 0.72);
+  --color-surface-raised: rgba(34, 23, 36, 0.92);   /* menus, modals */
+  --color-surface-sunken: rgba(18, 11, 18, 0.55);   /* inputs, wells */
+  --glass-blur: 18px;
+
+  --color-border:        rgba(245, 163, 195, 0.16);
+  --color-border-strong: rgba(245, 163, 195, 0.42);
+  --color-divider:       rgba(251, 239, 227, 0.07);
+  --color-hardware:      var(--palette-silver-500);  /* chain dividers, toggle knobs, rings */
+  --color-track:         var(--palette-plum-700);    /* empty part of rings, bars, toggles */
+  --color-series-muted:  var(--palette-plum-600);    /* bars that aren't the current one */
+
+  --color-text:        var(--palette-cream-100);
+  --color-text-strong: var(--palette-cream-50);
+  --color-text-muted:  var(--palette-plum-300);
+  --color-text-dim:    var(--palette-plum-400);   /* non-essential text only */
+
+  /* Pink: primary actions, selection, headings, the one thing per panel */
+  --color-accent:       var(--palette-pink-500);     /* fills, rings, glows */
+  --color-accent-text:  var(--palette-pink-500);     /* pink words and icons */
+  --color-accent-hover: var(--palette-pink-400);
+  --color-accent-soft:  rgba(245, 163, 195, 0.14);
+  --color-accent-soft-hover: rgba(245, 163, 195, 0.22);
+  --color-on-accent:    var(--palette-plum-950);   /* text on any pastel fill is dark, never cream */
+
+  /* Cream: big numbers and quiet emphasis */
+  --color-highlight:      var(--palette-cream-200);
+  --color-highlight-soft: rgba(243, 225, 207, 0.10);
+
+  /* Secondary accent: links, secondary chips, the second series */
+  --color-secondary:      var(--palette-lilac-500);
+  --color-secondary-text: var(--palette-lilac-500);
+  --color-secondary-soft: rgba(200, 168, 239, 0.14);
+
+  /* Status (docs/01-color.md: Status). Colour is never the only signal. */
+  --color-status-ok:      var(--palette-mint-500);
+  --color-status-pending: var(--palette-butter-500);
+  --color-status-idle:    var(--palette-plum-400);
+  --color-status-warning: var(--palette-peach-500);
+  --color-status-danger:  var(--palette-cherry-500);
+  --color-danger-text:    var(--palette-cherry-400);
+  --color-danger-fill:    rgba(196, 26, 18, 0.20);
+  --color-danger-border:  rgba(255, 82, 71, 0.55);
+  --color-info:           var(--palette-sky-500);
+
+  --color-focus-ring: var(--palette-pink-300);
+  --color-selection:  rgba(245, 163, 195, 0.32);
+
+  /* ---------- 3a. Typography (docs/02-typography.md) ---------- */
+
+  --font-sans:    "Nunito", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Fredoka", "Nunito", "Segoe UI Variable Display", var(--font-sans);
+  --font-mono:    "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
+
+  --text-xs:  0.75rem;    /* 12px: captions, chips */
+  --text-sm:  0.8125rem;  /* 13px: dense rows */
+  --text-md:  0.9375rem;  /* 15px: body */
+  --text-lg:  1.0625rem;  /* 17px */
+  --text-xl:  1.25rem;    /* 20px: card titles */
+  --text-2xl: 1.625rem;   /* 26px: page titles */
+  --text-3xl: 2.25rem;    /* 36px: stat values */
+  --text-4xl: 3rem;       /* 48px: hero number */
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --leading-tight:  1.2;
+  --leading-normal: 1.55;
+
+  --tracking-tight: -0.01em;  /* display sizes */
+  --tracking-none:  0;
+  --tracking-caps:  0.06em;   /* small sentence-case eyebrows, never shouty caps */
+
+  /* ---------- 3b. Spacing (docs/03-spacing-layout.md) ---------- */
+
+  --space-0:  0;
+  --space-1:  0.25rem;  /* 4px */
+  --space-2:  0.5rem;   /* 8px */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ---------- 3c. Shape (docs/04-components.md) ---------- */
+
+  --radius-sm:   8px;    /* chips inside cards, small inputs */
+  --radius-md:   14px;   /* buttons, inputs, rows */
+  --radius-lg:   20px;   /* cards */
+  --radius-xl:   28px;   /* modals, hero cards */
+  --radius-full: 9999px; /* pills, avatars, toggles */
+
+  --line-hair: 1px;
+  --line-soft: 1.5px;
+  --line-bold: 2px;
+
+  /* Depth is a soft, blurry lift with a faint pink bloom, never a hard edge */
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 8px 24px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(245, 163, 195, 0.04);
+  --shadow-lg:    0 18px 48px rgba(0, 0, 0, 0.50);
+  --shadow-inset: inset 0 1px 0 rgba(255, 248, 240, 0.06);  /* top sheen on cards */
+  --glow-pink:    0 0 0 4px rgba(245, 163, 195, 0.14), 0 6px 22px rgba(245, 163, 195, 0.22);
+  --glow-danger:  0 0 0 4px rgba(255, 82, 71, 0.16);
+
+  --text-glow: 0 0 18px rgba(245, 163, 195, 0.35);  /* hero number only */
+
+  /* ---------- 3d. Motion (docs/05-motion.md) ---------- */
+
+  --duration-instant: 90ms;
+  --duration-fast:    160ms;
+  --duration-normal:  260ms;
+  --duration-slow:    450ms;
+
+  --stagger: 40ms;
+
+  --ease-soft:   cubic-bezier(0.22, 1, 0.36, 1);      /* gentle settle: most things */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);   /* small overshoot: presses, pops, toggles */
+  --ease-exit:   cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-standard: var(--ease-soft);
+
+  /* Ambient loops */
+  --loop-twinkle: 2.4s;
+  --loop-float:   6s;
+  --loop-pulse:   1.8s;
+
+  /* ---------- 3e. Layering ---------- */
+
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-modal:    200;
+  --z-toast:    300;
+}
+
+/* ---------- Light variant (decisions/0008, docs/07-theming.md) ----------
+ * Same pinks and creams, turned inside out: a blush-cream field, white frosted cards,
+ * plum ink. Pastels stay as fills; anything that is text or a glyph uses its deep "ink".
+ */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-bg:          var(--palette-blush-50);
+  --color-bg-elevated: #fffaf7;
+  --color-bg-haze:
+    radial-gradient(60rem 40rem at 0% 0%, rgba(245, 163, 195, 0.18), transparent 60%),
+    radial-gradient(50rem 40rem at 100% 100%, rgba(200, 168, 239, 0.16), transparent 60%);
+
+  --color-surface:        rgba(255, 252, 250, 0.70);
+  --color-surface-hover:  rgba(255, 252, 250, 0.86);
+  --color-surface-raised: rgba(255, 253, 251, 0.95);
+  --color-surface-sunken: rgba(140, 68, 102, 0.06);
+
+  --color-border:        rgba(192, 102, 143, 0.20);
+  --color-border-strong: rgba(192, 102, 143, 0.45);
+  --color-divider:       rgba(42, 26, 44, 0.08);
+  --color-hardware:      var(--palette-silver-ink);
+  --color-track:         rgba(140, 68, 102, 0.12);
+  --color-series-muted:  rgba(140, 68, 102, 0.22);
+
+  --color-text:        var(--palette-ink-900);
+  --color-text-strong: #1a111b;
+  --color-text-muted:  var(--palette-ink-700);
+  --color-text-dim:    var(--palette-ink-500);
+
+  --color-accent:       var(--palette-pink-500);
+  --color-accent-hover: var(--palette-pink-400);
+  --color-accent-text:  var(--palette-pink-ink);
+  --color-accent-soft:  rgba(245, 163, 195, 0.22);
+  --color-accent-soft-hover: rgba(245, 163, 195, 0.34);
+  --color-on-accent:    var(--palette-ink-900);
+
+  --color-highlight:      var(--palette-ink-900);
+  --color-highlight-soft: rgba(42, 26, 44, 0.05);
+
+  --color-secondary:      var(--palette-lilac-500);
+  --color-secondary-text: var(--palette-lilac-ink);
+  --color-secondary-soft: rgba(200, 168, 239, 0.24);
+
+  --color-status-ok:      var(--palette-mint-ink);
+  --color-status-pending: var(--palette-butter-ink);
+  --color-status-idle:    var(--palette-ink-500);
+  --color-status-warning: var(--palette-peach-ink);
+  --color-status-danger:  var(--palette-cherry-600);
+  --color-danger-text:    var(--palette-cherry-600);
+  --color-danger-fill:    rgba(196, 26, 18, 0.10);
+  --color-danger-border:  rgba(196, 26, 18, 0.45);
+  --color-info:           var(--palette-sky-ink);
+
+  --color-focus-ring: var(--palette-pink-600);
+  --color-selection:  rgba(245, 163, 195, 0.45);
+
+  --shadow-sm:    0 2px 8px rgba(140, 68, 102, 0.10);
+  --shadow-md:    0 8px 24px rgba(140, 68, 102, 0.12), 0 0 0 1px rgba(192, 102, 143, 0.05);
+  --shadow-lg:    0 18px 48px rgba(140, 68, 102, 0.18);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --glow-pink:    0 0 0 4px rgba(245, 163, 195, 0.30), 0 6px 22px rgba(245, 163, 195, 0.35);
+  --glow-danger:  0 0 0 4px rgba(196, 26, 18, 0.12);
+  --text-glow:    none;
+}
+
+/* Reduced motion: stop loops, drop the bounce and collapse transitions everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast:    0ms;
+    --duration-normal:  0ms;
+    --duration-slow:    0ms;
+    --stagger:          0ms;
+    --ease-bounce:      var(--ease-soft);
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,213 @@
+/*
+ * Pastel Girl shared primitives. Requires tokens/tokens.css.
+ * Rules: docs/04-components.md (shapes), docs/05-motion.md (keyframes).
+ */
+
+/* ---------- Page ---------- */
+
+.soft-root {
+  background: var(--color-bg-haze), var(--color-bg);
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+.soft-root ::selection { background: var(--color-selection); color: var(--color-text-strong); }
+
+:focus-visible {
+  outline: var(--line-bold) solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--color-surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.2);
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), var(--shadow-inset);
+  padding: var(--space-5);
+  transition: background var(--duration-normal) var(--ease-soft),
+              border-color var(--duration-normal) var(--ease-soft),
+              transform var(--duration-normal) var(--ease-soft);
+}
+
+.card--interactive:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+  transform: translateY(-2px);
+}
+
+.card.is-active {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md), var(--shadow-inset), var(--glow-pink);
+}
+
+.card--raised {
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg), var(--shadow-inset);
+}
+
+.well {
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+/* ---------- Text ---------- */
+
+.soft-title {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-strong);
+  margin: 0;
+}
+
+.soft-eyebrow {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  color: var(--color-accent-text);
+}
+
+.soft-muted { color: var(--color-text-muted); }
+
+.soft-value {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-3xl);
+  line-height: 1;
+  color: var(--color-highlight);
+  font-variant-numeric: tabular-nums;
+}
+
+.soft-value--hero { font-size: var(--text-4xl); text-shadow: var(--text-glow); }
+
+.soft-unit { font-size: var(--text-sm); color: var(--color-text-muted); margin-left: 0.2em; }
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-full);
+  border: var(--line-soft) solid transparent;
+  font: inherit;
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-bounce),
+              background var(--duration-fast) var(--ease-soft),
+              box-shadow var(--duration-fast) var(--ease-soft);
+}
+
+.btn:active { transform: scale(0.96); }
+
+.btn--primary { background: var(--color-accent); color: var(--color-on-accent); }
+.btn--primary:hover { background: var(--color-accent-hover); box-shadow: var(--glow-pink); }
+
+.btn--soft { background: var(--color-accent-soft); color: var(--color-accent-text); }
+.btn--soft:hover { background: var(--color-accent-soft-hover); }
+
+.btn--ghost { background: transparent; color: var(--color-text); border-color: var(--color-border-strong); }
+.btn--ghost:hover { background: var(--color-accent-soft); }
+
+.btn--danger { background: var(--color-danger-fill); color: var(--color-danger-text); border-color: var(--color-danger-border); }
+.btn--danger:hover { box-shadow: var(--glow-danger); }
+
+/* ---------- Chips and badges ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-text);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+}
+
+.chip--lilac  { background: var(--color-secondary-soft); color: var(--color-secondary-text); }
+.chip--solid  { background: var(--color-accent); color: var(--color-on-accent); }
+
+/* ---------- Hardware: the hard edge against the soft ---------- */
+
+/* A dotted silver "chain" divider. Use once or twice per screen, never as a box border. */
+.chain {
+  height: 4px;
+  border: 0;
+  margin: var(--space-4) 0;
+  background: radial-gradient(circle, var(--color-hardware) 1.2px, transparent 1.6px) 0 50% / 8px 4px repeat-x;
+  opacity: 0.55;
+}
+
+/* ---------- Motifs ---------- */
+
+/* A four-point sparkle. Size with font-size; colour with color. */
+.sparkle {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+}
+
+/* ---------- Motion ---------- */
+
+.soft-enter {
+  animation: soft-pop var(--duration-slow) var(--ease-bounce) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+
+.soft-twinkle { animation: soft-twinkle var(--loop-twinkle) var(--ease-soft) infinite; }
+.soft-float   { animation: soft-float var(--loop-float) ease-in-out infinite; }
+.soft-pulse   { animation: soft-pulse var(--loop-pulse) ease-in-out infinite; }
+/* A little wiggle when an icon or motif is hovered. */
+.soft-wiggle:hover { animation: soft-wiggle var(--duration-slow) var(--ease-soft); }
+/* A happy pop: success toasts, a heart being tapped. */
+.soft-boop { animation: soft-boop var(--duration-slow) var(--ease-bounce); }
+
+@keyframes soft-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes soft-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.8) rotate(0deg); }
+  50%      { opacity: 1;    transform: scale(1)   rotate(20deg); }
+}
+
+@keyframes soft-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes soft-wiggle {
+  0%, 100% { transform: rotate(0); }
+  25%      { transform: rotate(-10deg); }
+  75%      { transform: rotate(8deg); }
+}
+
+@keyframes soft-boop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
