@@ -84,16 +84,16 @@ strongest); "card" is `--color-surface` over that same point.
 
 | Text | On field | On card | On `accent-soft` |
 |---|---|---|---|
-| Text oat-100 | 15.3 | 12.1 | 9.4 |
-| Muted pine-300 | 9.6 | 7.6 | 5.9 |
-| Dim pine-400 | 6.1 | 4.8 | **3.8** |
-| Moss words (moss-300) | 10.6 | 8.4 | 6.5 |
-| Moss fill (moss-400) | 7.4 | 5.8 | 4.5 |
-| Big numbers (oat-200) | 13.4 | 10.6 | 8.2 |
-| Walnut-300 | 7.8 | 6.1 | 4.8 |
-| Fern / lake / lichen / heather | 8.2+ | 6.5+ | 5.0+ |
-| Rowan-400 (glyphs, borders) | 5.5 | 4.3 | 3.4 |
-| Rowan-300 (danger text) | 7.6 | 6.0 | 4.6 |
+| Text oat-100 | 13.1 | 12.1 | 9.4 |
+| Muted pine-300 | 8.3 | 7.6 | 5.9 |
+| Dim pine-400 | 5.3 | 4.8 | **3.8** |
+| Moss words (moss-300) | 9.1 | 8.4 | 6.5 |
+| Moss fill (moss-400) | 6.3 | 5.8 | 4.5 |
+| Big numbers (oat-200) | 11.5 | 10.6 | 8.2 |
+| Walnut-300 | 6.7 | 6.1 | 4.8 |
+| Fern / lake / lichen / heather | 7.0+ | 6.5+ | 5.0+ |
+| Rowan-400 (glyphs, borders) | 4.7 | 4.3 | 3.4 |
+| Rowan-300 (danger text) | 6.5 | 6.0 | 4.6 |
 
 - Never put dim text on `accent-soft` in dark (3.8).
 - Danger text uses `--color-danger-text` (rowan-300): 5.7 on the danger fill. Rowan-400 is for glyphs and borders.

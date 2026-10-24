@@ -104,6 +104,7 @@ D_SURFACE_HAZE = over((34, 49, 40, 0.62), D_HAZE)
 
 d_surfaces = {
     "bg": D_BG,
+    "haze": D_HAZE,
     "surface/bg": D_SURFACE,
     "surface/haze": D_SURFACE_HAZE,
     "raised/bg": over((27, 39, 32, 0.95), D_BG),
