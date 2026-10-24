@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Woodland Preview</title>
+<!-- Google Fonts are for this preview only; apps self-host or rely on the fallbacks. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..600,0..100,0..1&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/woodland.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: var(--color-bg); }
+  .page { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-4) var(--space-16); }
+  header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-6); }
+  header h1 { font-family: var(--font-display); font-variation-settings: var(--font-display-settings); font-weight: var(--weight-semibold); font-size: var(--text-2xl); margin: 0; display: flex; align-items: center; gap: var(--space-3); }
+  header h1 .motif { color: var(--color-accent); font-size: 0.8em; }
+  .time { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .grid { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); } .span-2 { grid-column: span 2; } }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); }
+  .stack { display: flex; flex-direction: column; gap: var(--space-3); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+
+  /* Ring progress */
+  .ring-wrap { display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap; }
+  .ring { position: relative; width: 140px; height: 140px; flex: none; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .track { stroke: var(--color-track); }
+  .ring .fill { stroke: var(--color-accent); stroke-linecap: round; }
+  .ring .center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .hero-motif { position: absolute; right: var(--space-6); bottom: var(--space-5); font-size: 44px; color: var(--color-accent); opacity: 0.18; }
+
+  /* Status list */
+  .list { list-style: none; margin: 0; padding: 0; }
+  .list li { display: flex; align-items: center; gap: var(--space-3); min-height: 44px; padding: 0 var(--space-3); border-radius: var(--radius-md); }
+  .list li:hover { background: var(--color-accent-soft); }
+  .list .glyph { font-size: 18px; }
+  .list .name { flex: 1; }
+  .list .when { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-dim); }
+
+  /* Bars */
+  .bars { display: flex; align-items: flex-end; gap: var(--space-2); height: 120px; }
+  .bars div { flex: 1; border-radius: var(--radius-sm) var(--radius-sm) 3px 3px; background: var(--color-series-muted); }
+  .bars div.now { background: var(--color-accent); }
+  .bar-labels { display: flex; gap: var(--space-2); margin-top: var(--space-2); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .bar-labels span { flex: 1; text-align: center; }
+
+  /* Progress bar */
+  .progress { height: 8px; border-radius: var(--radius-full); background: var(--color-track); overflow: hidden; }
+  .progress > span { display: block; height: 100%; border-radius: inherit; background: var(--color-secondary); }
+
+  /* Inputs */
+  label.field { display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .input { font: inherit; color: var(--color-text); background: var(--color-surface-sunken); border: var(--line-hair) solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); transition: border-color var(--duration-fast) var(--ease-natural); }
+  .input::placeholder { color: var(--color-text-dim); }
+  .input:focus-visible { border-color: var(--color-border-strong); }
+
+  /* Toast */
+  .toast { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-5); border-radius: var(--radius-lg); background: var(--color-surface-raised); border: var(--line-hair) solid var(--color-border); box-shadow: var(--shadow-lg); }
+
+  /* Motif sheet */
+  .motifs { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: var(--space-3); }
+  .motifs figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-2); border-radius: var(--radius-md); background: var(--color-surface-sunken); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .motifs .motif, .motifs .glyph { font-size: 28px; }
+  .motifs .motif { color: var(--color-accent); }
+
+  /* Swatches */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: var(--space-3); }
+  .sw { border-radius: var(--radius-md); overflow: hidden; border: var(--line-hair) solid var(--color-divider); font-size: var(--text-xs); }
+  .sw i { display: block; height: 48px; }
+  .sw b { display: block; padding: var(--space-2); font-weight: var(--weight-semibold); }
+  .sw code { font-family: var(--font-mono); color: var(--color-text-dim); }
+
+  .float-leaf { position: fixed; right: 6%; top: 16%; font-size: 30px; color: var(--color-accent); opacity: 0.22; pointer-events: none; }
+  .firefly { position: fixed; width: 6px; height: 6px; border-radius: 50%; background: var(--palette-lichen-300); box-shadow: 0 0 12px 4px rgba(217, 187, 106, 0.5); pointer-events: none; display: none; }
+  :root[data-theme="dark"] .firefly { display: block; }
+</style>
+</head>
+<body class="wood-root">
+<span class="float-leaf motif motif--leaf wood-sway" aria-hidden="true"></span>
+<span class="firefly wood-glow" style="left:8%;top:62%" aria-hidden="true"></span>
+<span class="firefly wood-glow" style="left:92%;top:78%;animation-delay:1.6s" aria-hidden="true"></span>
+<div class="page">
+  <header>
+    <h1><span class="motif motif--pine" aria-hidden="true"></span>Good morning</h1>
+    <div class="row"><span class="time">sat 24 oct · 08:12</span>
+      <button class="btn btn--ghost" id="theme" aria-label="Switch to dark">Night mode</button></div>
+  </header>
+
+  <div class="grid">
+    <section class="card card--pebble span-2 wood-enter" style="--i:0;position:relative">
+      <span class="hero-motif motif motif--fern" aria-hidden="true"></span>
+      <div class="card-head">
+        <span class="wood-eyebrow">This week</span>
+        <span class="chip"><span class="motif motif--leaf" aria-hidden="true"></span> 5 day streak</span>
+      </div>
+      <div class="ring-wrap">
+        <div class="ring">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="track" cx="60" cy="60" r="50" fill="none" stroke-width="9"/>
+            <circle class="fill" cx="60" cy="60" r="50" fill="none" stroke-width="9" stroke-dasharray="314.16" stroke-dashoffset="87.96"/>
+          </svg>
+          <div class="center"><span class="wood-value">72<span class="wood-unit">%</span></span></div>
+        </div>
+        <div class="stack">
+          <h2 class="wood-title">Walking goal</h2>
+          <p class="wood-muted" style="margin:0">18 of 25 km this week. Seven more and you're there.</p>
+          <div class="row"><button class="btn btn--primary">Log a walk</button><button class="btn btn--soft">See history</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card wood-enter" style="--i:1">
+      <div class="card-head"><span class="wood-eyebrow">Harvested</span><span class="motif motif--acorn wood-rustle" style="color:var(--color-secondary)" aria-hidden="true"></span></div>
+      <span class="wood-value wood-value--hero">1,240<span class="wood-unit">g</span></span>
+      <p class="wood-muted">Less food waste than last month.</p>
+      <div class="progress" role="progressbar" aria-label="Monthly goal" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100"><span style="width:64%"></span></div>
+    </section>
+
+    <section class="card wood-enter" style="--i:2">
+      <div class="card-head"><h2 class="wood-title">Status</h2></div>
+      <ul class="list">
+        <li><span class="glyph glyph--ok" aria-hidden="true"></span><span class="name">Backup finished</span><span class="when">07:41</span></li>
+        <li><span class="glyph glyph--pending wood-breathe" aria-hidden="true"></span><span class="name">Syncing photos</span><span class="when">now</span></li>
+        <li><span class="glyph glyph--idle" aria-hidden="true"></span><span class="name">Media server off</span><span class="when">—</span></li>
+        <li><span class="glyph glyph--warning" aria-hidden="true"></span><span class="name">Disk 86% full</span><span class="when">06:12</span></li>
+        <li><span class="glyph glyph--danger" aria-hidden="true"></span><span class="name">Sign-in failed: key rejected</span><span class="when">05:03</span></li>
+        <li><span class="glyph glyph--info" aria-hidden="true"></span><span class="name">Update available</span><span class="when">today</span></li>
+      </ul>
+    </section>
+
+    <section class="card wood-enter" style="--i:3">
+      <div class="card-head"><h2 class="wood-title">Minutes outside</h2><span class="wood-eyebrow">Daily</span></div>
+      <div class="bars" aria-hidden="true">
+        <div style="height:40%"></div><div style="height:65%"></div><div style="height:30%"></div><div style="height:80%"></div><div class="now" style="height:95%"></div><div style="height:20%"></div><div style="height:10%"></div>
+      </div>
+      <div class="bar-labels"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span></div>
+    </section>
+
+    <section class="card wood-enter" style="--i:4">
+      <div class="card-head"><h2 class="wood-title">Controls</h2></div>
+      <div class="stack">
+        <label class="field">Name your list<input class="input" placeholder="Autumn pantry"></label>
+        <div class="row" style="justify-content:space-between">
+          <span>Morning reminders</span>
+          <button class="toggle" role="switch" aria-checked="true" aria-label="Morning reminders" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true')"></button>
+        </div>
+        <hr class="wood-twig">
+        <div class="row">
+          <span class="chip chip--solid">All</span><span class="chip">Favourites</span><span class="chip chip--walnut">Later</span>
+        </div>
+        <div class="row"><button class="btn btn--ghost">Cancel</button><button class="btn btn--danger">Delete list</button></div>
+      </div>
+    </section>
+
+    <section class="card wood-enter" style="--i:5">
+      <div class="card-head"><h2 class="wood-title">Toast</h2></div>
+      <div class="toast"><span class="glyph glyph--ok" aria-hidden="true"></span><span>Recipe saved.</span></div>
+      <div class="well" style="margin-top:var(--space-4)">
+        <div class="wood-eyebrow">Empty state</div>
+        <p style="margin:var(--space-2) 0 0" class="wood-muted"><span class="motif motif--mushroom" aria-hidden="true"></span> Nothing growing here yet. Plant your first one?</p>
+      </div>
+    </section>
+
+    <section class="card span-2 wood-enter" style="--i:6">
+      <div class="card-head"><h2 class="wood-title">Motifs</h2><span class="wood-eyebrow">Decoration</span></div>
+      <div class="motifs">
+        <figure><span class="motif motif--leaf wood-rustle" aria-hidden="true"></span>Leaf</figure>
+        <figure><span class="motif motif--fern wood-rustle" aria-hidden="true"></span>Fern</figure>
+        <figure><span class="motif motif--pine wood-rustle" aria-hidden="true"></span>Pine</figure>
+        <figure><span class="motif motif--mushroom wood-rustle" aria-hidden="true"></span>Mushroom</figure>
+        <figure><span class="motif motif--acorn wood-rustle" aria-hidden="true"></span>Acorn</figure>
+        <figure><span class="motif motif--pinecone wood-rustle" aria-hidden="true"></span>Pinecone</figure>
+        <figure><span class="motif motif--sun wood-rustle" aria-hidden="true"></span>Sun</figure>
+      </div>
+      <div class="card-head" style="margin:var(--space-5) 0 var(--space-3)"><span class="wood-eyebrow">Status glyphs (never decoration)</span></div>
+      <div class="motifs">
+        <figure><span class="glyph glyph--ok" aria-hidden="true"></span>OK</figure>
+        <figure><span class="glyph glyph--pending" aria-hidden="true"></span>Pending</figure>
+        <figure><span class="glyph glyph--idle" aria-hidden="true"></span>Idle</figure>
+        <figure><span class="glyph glyph--warning" aria-hidden="true"></span>Warning</figure>
+        <figure><span class="glyph glyph--danger" aria-hidden="true"></span>Error</figure>
+        <figure><span class="glyph glyph--info" aria-hidden="true"></span>Info</figure>
+      </div>
+    </section>
+
+    <section class="card wood-enter" style="--i:7">
+      <div class="card-head"><h2 class="wood-title">Type</h2></div>
+      <div class="stack">
+        <span style="font-family:var(--font-display);font-variation-settings:var(--font-display-settings);font-size:var(--text-2xl);font-weight:600">Fraunces, soft</span>
+        <span>Nunito Sans for everything you read, at 15px with roomy line height. <a href="#">A moss link</a>.</span>
+        <span style="font-family:var(--font-mono);font-size:var(--text-sm);color:var(--color-text-muted)">cascadia mono · 08:12:33</span>
+      </div>
+    </section>
+
+    <section class="card span-2 wood-enter" style="--i:8">
+      <div class="card-head"><h2 class="wood-title">Palette</h2><span class="wood-eyebrow">Moss and oat lead</span></div>
+      <div class="swatches">
+        <div class="sw"><i style="background:var(--palette-moss-600)"></i><b>Moss <code>600</code></b></div>
+        <div class="sw"><i style="background:var(--palette-moss-400)"></i><b>Moss <code>400</code></b></div>
+        <div class="sw"><i style="background:var(--palette-moss-200)"></i><b>Moss <code>200</code></b></div>
+        <div class="sw"><i style="background:var(--palette-oat-100)"></i><b>Oat <code>100</code></b></div>
+        <div class="sw"><i style="background:var(--palette-oat-300)"></i><b>Oat <code>300</code></b></div>
+        <div class="sw"><i style="background:var(--palette-bark-900)"></i><b>Bark <code>900</code></b></div>
+        <div class="sw"><i style="background:var(--palette-bark-500)"></i><b>Bark <code>500</code></b></div>
+        <div class="sw"><i style="background:var(--palette-pine-950)"></i><b>Pine <code>950</code></b></div>
+        <div class="sw"><i style="background:var(--palette-pine-700)"></i><b>Pine <code>700</code></b></div>
+        <div class="sw"><i style="background:var(--palette-walnut-500)"></i><b>Walnut</b></div>
+        <div class="sw"><i style="background:var(--palette-fern-300)"></i><b>Fern</b></div>
+        <div class="sw"><i style="background:var(--palette-lake-300)"></i><b>Lake</b></div>
+        <div class="sw"><i style="background:var(--palette-lichen-300)"></i><b>Lichen</b></div>
+        <div class="sw"><i style="background:var(--palette-heather-300)"></i><b>Heather</b></div>
+        <div class="sw"><i style="background:var(--palette-rowan-400)"></i><b>Rowan</b></div>
+      </div>
+    </section>
+  </div>
+</div>
+<script>
+  // Preview only: switch variants. Apps choose their own way (docs/07-theming.md).
+  const btn = document.getElementById("theme");
+  btn.addEventListener("click", () => {
+    const dark = document.documentElement.dataset.theme !== "dark";
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    btn.textContent = dark ? "Day mode" : "Night mode";
+    btn.setAttribute("aria-label", dark ? "Switch to light" : "Switch to dark");
+  });
+</script>
+</body>
+</html>

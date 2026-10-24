@@ -8,6 +8,7 @@ that apps copy from.
 |---|---|---|
 | [`JarvisApps/`](JarvisApps/README.md) | Iron Man style HUD: dark only, warm metallics, glass, monospace readouts | Home-lab dashboards and tools (web and Electron) |
 | [`PastelGirl/`](PastelGirl/README.md) | Very cute, soft and round: pinks and creams, dark by default with a light variant, frosted round cards, pills, hearts and sparkles | Planned: an optional theme in iPhone Explorer |
+| [`Woodland/`](Woodland/README.md) | Soft, earthy and natural: moss greens on oat paper with bark ink, light by default with a night-forest dark variant, leaf, fern, pine, mushroom and acorn motifs | TBD |
 
 Guides are independent. Each app names the guide it follows in its own `CLAUDE.md` (or the
 guides it offers, if it lets the user pick a theme).
