@@ -7,6 +7,7 @@ that apps copy from.
 | Guide | Look | For |
 |---|---|---|
 | [`JarvisApps/`](JarvisApps/README.md) | Iron Man style HUD: dark only, warm metallics, glass, monospace readouts | Home-lab dashboards and tools (web and Electron) |
+| [`macOS/`](macOS/README.md) | The default macOS app look, partnering Win11: SF Pro, neutral greys, the system accent, Apple's system colours, sidebar and toolbar, Liquid Glass controls, light or dark to match the Mac | No app yet |
 | [`PastelGirl/`](PastelGirl/README.md) | Very cute, soft and round: pinks and creams, dark by default with a light variant, frosted round cards, pills, hearts and sparkles | Planned: an optional theme in iPhone Explorer |
 | [`Win11/`](Win11/README.md) | The default Windows 11 app look (Fluent): Segoe UI Variable, neutral greys, the system accent, light or dark to match Windows | Phone Explorer's default theme |
 | [`Woodland/`](Woodland/README.md) | Soft, earthy and natural: moss greens on oat paper with bark ink, light by default with a night-forest dark variant, leaf, fern, pine, mushroom and acorn motifs | Larder |

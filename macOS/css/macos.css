@@ -1,0 +1,494 @@
+/*
+ * macOS shared primitives. Load after tokens/tokens.css.
+ * Rules: docs/04-components.md. Every value comes from a token.
+ * The shapes follow AppKit's standard controls; sizes and radii are (Proposed), see tokens.css.
+ */
+
+/* ---------- Base ---------- */
+
+.mac-root {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mac-root ::selection { background: var(--color-text-selection); }
+
+/* ---------- Text styles (HIG > Typography) ---------- */
+
+.text-large-title  { font-size: var(--text-large-title); line-height: var(--leading-large-title); letter-spacing: var(--tracking-large-title); font-weight: var(--weight-regular); }
+.text-title-1      { font-size: var(--text-title-1);     line-height: var(--leading-title-1);     letter-spacing: var(--tracking-title-1);     font-weight: var(--weight-regular); }
+.text-title-2      { font-size: var(--text-title-2);     line-height: var(--leading-title-2);     letter-spacing: var(--tracking-title-2);     font-weight: var(--weight-regular); }
+.text-title-3      { font-size: var(--text-title-3);     line-height: var(--leading-title-3);     letter-spacing: var(--tracking-title-3);     font-weight: var(--weight-regular); }
+.text-headline     { font-size: var(--text-headline);    line-height: var(--leading-body);        letter-spacing: var(--tracking-body);        font-weight: var(--weight-bold); }
+.text-body         { font-size: var(--text-body);        line-height: var(--leading-body);        letter-spacing: var(--tracking-body); }
+.text-callout      { font-size: var(--text-callout);     line-height: var(--leading-callout);     letter-spacing: var(--tracking-callout); }
+.text-subheadline  { font-size: var(--text-subheadline); line-height: var(--leading-subheadline); letter-spacing: var(--tracking-subheadline); }
+.text-footnote     { font-size: var(--text-footnote);    line-height: var(--leading-caption);     letter-spacing: var(--tracking-caption); }
+.text-caption      { font-size: var(--text-caption);     line-height: var(--leading-caption);     letter-spacing: var(--tracking-caption); }
+.text-caption-2    { font-size: var(--text-caption);     line-height: var(--leading-caption);     letter-spacing: var(--tracking-caption); font-weight: var(--weight-medium); }
+/* Emphasized variants (the "Emphasized weight" column) */
+.text-large-title.is-emphasized, .text-title-1.is-emphasized, .text-title-2.is-emphasized { font-weight: var(--weight-bold); }
+.text-title-3.is-emphasized, .text-body.is-emphasized, .text-callout.is-emphasized,
+.text-subheadline.is-emphasized, .text-footnote.is-emphasized { font-weight: var(--weight-semibold); }
+.text-headline.is-emphasized { font-weight: var(--weight-heavy); }
+.text-muted { color: var(--color-text-muted); }
+.text-dim   { color: var(--color-text-dim); }
+.mono { font-family: var(--font-mono); letter-spacing: 0; }
+
+/* ---------- Focus ---------- */
+
+/* The keyboard focus ring: a translucent accent ring hugging the control's shape. */
+.mac-root :focus-visible {
+  outline: var(--line-focus) solid var(--color-focus);
+  outline-offset: 0;
+}
+
+/* ---------- Window frame ---------- */
+
+/* Toolbar: unified with the title bar. Over scrolling content it can be glass (.glass). */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--toolbar-height);
+  padding: 0 var(--space-4);
+  background: var(--color-bg-elevated);
+  border-bottom: var(--line-hair) solid var(--color-divider);
+}
+.toolbar__title { font-weight: var(--weight-bold); font-size: var(--text-body); margin-right: auto; }
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex: none;
+  padding: var(--space-2);
+  background: var(--color-sidebar);
+}
+.sidebar__heading {
+  padding: var(--space-3) var(--space-2) var(--space-1);
+  font-size: var(--text-subheadline);
+  line-height: var(--leading-subheadline);
+  font-weight: var(--weight-bold);
+  color: var(--color-text-dim);
+}
+
+/* Sidebar rows: a quiet grey highlight when selected, accent-coloured icons (HIG > Sidebars). */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--row-height);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  text-decoration: none;
+  cursor: default;
+}
+.sidebar-item .icon { color: var(--color-accent); }
+.sidebar-item.is-selected { background: var(--color-subtle-pressed); }
+.sidebar-item .badge { margin-left: auto; }
+
+/* ---------- Grouped form (System Settings style) ---------- */
+
+/* A rounded box of rows: label on the leading side, control on the trailing side, inset
+   separators between rows. */
+.group {
+  background: var(--color-surface);
+  border-radius: var(--radius-box);
+  padding: 0 var(--space-3);
+}
+.group + .group { margin-top: var(--space-5); }
+.group__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 40px;  /* (Proposed) a form row: 28px control plus 6px above and below */
+  padding: 6px 0;
+  border-top: var(--line-hair) solid var(--color-divider);
+}
+.group__row:first-child { border-top: 0; }
+.group__label { flex: 1; min-width: 0; }
+.group__desc { font-size: var(--text-subheadline); line-height: var(--leading-subheadline); color: var(--color-text-muted); }
+.group-heading { margin: var(--space-5) 0 var(--space-2) var(--space-3); font-weight: var(--weight-bold); }
+
+/* ---------- Buttons ---------- */
+
+/* Push button: the standard macOS button. White bezel with a hairline and a slight lift. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-width: 72px;  /* (Proposed) */
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-control);
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-control);
+  cursor: default;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+.btn:hover  { background: var(--color-control-hover); }
+.btn:active { background: var(--color-control-pressed); }
+.btn:disabled { background: var(--color-control-disabled); color: var(--color-text-disabled); box-shadow: none; }
+
+/* The default button: accent fill, responds to Return, sits on the trailing end. */
+.btn--default {
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border-color: transparent;
+}
+.btn--default:hover  { background: var(--color-accent-hover); }
+.btn--default:active { background: var(--color-accent-pressed); }
+.btn--default:disabled { background: var(--color-accent-disabled); color: var(--color-text-disabled); }
+
+/* Destructive: system red (HIG > Buttons: destructive role). Red text on the bezel in light,
+   a red fill with white text in dark (tokens: --color-danger-button). Bold, for contrast. */
+.btn--destructive { color: var(--color-danger-button-text); background: var(--color-danger-button); font-weight: var(--weight-bold); }
+.btn--destructive:hover  { background: var(--color-danger-button); filter: brightness(0.97); }
+.btn--destructive:active { background: var(--color-danger-button); filter: brightness(0.92); }
+
+/* Borderless: toolbar items and icon buttons. No bezel until hovered. */
+.btn--borderless { background: transparent; border-color: transparent; box-shadow: none; min-width: 0; }
+.btn--borderless:hover  { background: var(--color-subtle-hover); }
+.btn--borderless:active { background: var(--color-subtle-pressed); }
+.btn--icon { min-width: 0; width: var(--control-height); padding: 0; }
+.btn--capsule { border-radius: var(--radius-full); }
+
+/* ---------- Segmented control ---------- */
+
+.segmented {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  background: var(--color-toggle-off);
+  border-radius: var(--radius-control);
+}
+.segmented > button {
+  min-width: 56px;
+  height: calc(var(--control-height) - 4px);
+  padding: 0 var(--space-3);
+  font: inherit;
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--radius-control) - 2px);
+  cursor: default;
+}
+.segmented > button[aria-pressed="true"] { background: var(--color-control); box-shadow: var(--shadow-control); }
+
+/* ---------- Text field ---------- */
+
+.input {
+  height: var(--control-height);
+  padding: 0 var(--space-2);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-input);
+  border: var(--line-hair) solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  outline: none;
+}
+.input::placeholder { color: var(--color-text-dim); }
+.input:focus-visible { outline: var(--line-focus) solid var(--color-focus); }
+.input--search { padding-left: var(--space-6); border-radius: var(--radius-full); }
+
+/* Labels sit on the leading side and end with a colon (HIG > Combo boxes, Labels). */
+.field { display: grid; grid-template-columns: max-content 1fr; align-items: center; gap: var(--space-2); }
+
+/* ---------- Check box, radio, switch ---------- */
+
+.check, .radio {
+  appearance: none;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  display: inline-grid;
+  place-content: center;
+  background: var(--color-control);
+  border: var(--line-hair) solid var(--color-border-strong);
+  box-shadow: var(--shadow-control);
+  cursor: default;
+}
+.check { border-radius: var(--radius-small); }
+.radio { border-radius: var(--radius-full); }
+.check:checked, .radio:checked { background: var(--color-accent); border-color: transparent; }
+.check:checked::after {
+  content: "";
+  width: 7px;
+  height: 4px;
+  margin-top: -2px;
+  border-left: 2px solid var(--color-on-accent);
+  border-bottom: 2px solid var(--color-on-accent);
+  transform: rotate(-45deg);
+}
+.check:indeterminate { background: var(--color-accent); border-color: transparent; }
+.check:indeterminate::after { content: ""; width: 8px; height: 2px; border-radius: 1px; background: var(--color-on-accent); }
+.radio:checked::after { content: ""; width: 6px; height: 6px; border-radius: var(--radius-full); background: var(--color-on-accent); }
+
+/* Switch: emphasise a setting that turns on or off a group of things. White knob, accent track. */
+.switch {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 38px;
+  height: 22px;
+  margin: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-toggle-off);
+  cursor: default;
+  transition: background var(--duration-normal) var(--ease-default);
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-knob);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform var(--duration-normal) var(--ease-spring);
+}
+.switch:checked { background: var(--color-accent); }
+.switch:checked::after { transform: translateX(16px); }
+/* Mini switch: matches the height of buttons in a grouped form row (HIG > Toggles). */
+.switch--mini { width: 26px; height: 15px; }
+.switch--mini::after { width: 13px; height: 13px; }
+.switch--mini:checked::after { transform: translateX(11px); }
+
+.choice { display: inline-flex; align-items: center; gap: 6px; min-height: var(--control-height-small); cursor: default; }
+
+/* ---------- Lists and tables ---------- */
+
+/* Selection: accent fill with white text while the list has focus, grey when it doesn't
+   (HIG > Focus and selection). */
+.list { background: var(--color-content); border-radius: var(--radius-box); padding: var(--space-1); }
+.list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--row-height-table);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-small);
+  cursor: default;
+}
+.list--alternating .list-item:nth-child(even) { background: var(--color-content-alt); }
+.list-item.is-selected { background: var(--color-selection-inactive); }
+.list:focus-within .list-item.is-selected,
+.list.is-focused .list-item.is-selected { background: var(--color-selection); color: var(--color-on-accent); }
+.list:focus-within .list-item.is-selected .text-muted,
+.list.is-focused .list-item.is-selected .text-muted { color: var(--color-on-accent-muted); }
+.list:focus-visible { outline: none; }
+
+.divider { height: var(--line-hair); background: var(--color-divider); border: 0; margin: var(--space-1) 0; }
+
+/* ---------- Callout (Proposed) ---------- */
+
+/* macOS has no standard in-page message bar. When one is needed, keep it quiet: a status
+   glyph, a bold title, the message, on a faint status tint. Alerts are for interruptions. */
+.callout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-box);
+  background: var(--color-info-fill);
+}
+.callout__title { font-weight: var(--weight-bold); margin-right: var(--space-1); }
+.callout--ok      { background: var(--color-ok-fill); }
+.callout--warning { background: var(--color-warning-fill); }
+.callout--danger  { background: var(--color-danger-fill); }
+
+/* ---------- Progress ---------- */
+
+.progress {
+  position: relative;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-toggle-off);
+  overflow: hidden;
+}
+.progress > span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  transition: width var(--duration-normal) var(--ease-default);
+}
+.progress--indeterminate > span { width: 30%; animation: mac-progress 1.4s var(--ease-in-out) infinite; }
+@keyframes mac-progress { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+
+/* Spinner: twelve fading spokes, as AppKit's activity indicator. */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: conic-gradient(from 0deg, transparent, var(--color-text-muted));
+  -webkit-mask: repeating-conic-gradient(#000 0 15deg, transparent 15deg 30deg),
+                radial-gradient(circle, transparent 38%, #000 40%);
+  -webkit-mask-composite: source-in;
+          mask: repeating-conic-gradient(#000 0 15deg, transparent 15deg 30deg),
+                radial-gradient(circle, transparent 38%, #000 40%);
+          mask-composite: intersect;
+  animation: mac-spin var(--loop-spinner) steps(12) infinite;
+}
+@keyframes mac-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Badges ---------- */
+
+/* Sidebar and list counts: a grey capsule. Red only for things that need attention. */
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 5px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-subheadline);
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  background: var(--color-toggle-off);
+}
+.badge--danger { color: var(--color-on-accent); background: var(--color-danger); }
+
+/* ---------- Menus, popovers, tooltips ---------- */
+
+.menu {
+  min-width: 180px;
+  padding: 5px;
+  background: var(--color-surface-raised);
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-menu);
+  animation: mac-fade-in var(--duration-fast) var(--ease-out);
+}
+/* The highlighted item is an accent fill with white text. */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 22px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-small);
+  cursor: default;
+}
+.menu-item:hover, .menu-item.is-highlighted { background: var(--color-accent); color: var(--color-on-accent); }
+.menu-item:hover .menu-item__key, .menu-item.is-highlighted .menu-item__key { color: var(--color-on-accent-muted); }
+.menu-item__key { margin-left: auto; padding-left: var(--space-6); color: var(--color-text-dim); font-variant-numeric: tabular-nums; }
+.menu-item.is-disabled { color: var(--color-text-disabled); }
+.menu-item.is-disabled:hover { background: transparent; color: var(--color-text-disabled); }
+.menu .divider { margin: 5px var(--space-2); }
+
+.popover {
+  padding: var(--space-3);
+  background: var(--color-surface-raised);
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-menu);
+}
+
+.tooltip {
+  display: inline-block;
+  width: max-content;
+  max-width: 300px;
+  padding: 3px 7px;
+  font-size: var(--text-subheadline);
+  line-height: var(--leading-subheadline);
+  background: var(--color-surface-raised);
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-menu);
+}
+
+/* Liquid Glass: for the control layer only (toolbars, sidebars, menus, popovers), never for
+   content. Solid where the browser can't blur, or with Reduce Transparency on. */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .glass {
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+            backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+    box-shadow: inset 0 0.5px 0 var(--glass-edge), var(--shadow-menu);
+  }
+}
+
+@keyframes mac-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- Alert and sheet ---------- */
+
+.smoke { position: fixed; inset: 0; background: var(--color-smoke); z-index: var(--z-modal); display: grid; place-items: center; }
+.smoke[hidden] { display: none; }
+
+/* Alert: app icon, bold title, short informative text, buttons with the default on the
+   trailing side and Cancel before it. */
+.alert {
+  width: min(260px, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-5) var(--space-4) var(--space-4);
+  text-align: center;
+  background: var(--color-dialog);
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-window);
+  animation: mac-alert-in var(--duration-normal) var(--ease-spring);
+}
+.alert__icon { width: 64px; height: 64px; margin: 0 auto var(--space-3); }
+.alert__title { margin: 0 0 var(--space-1); font-size: var(--text-body); line-height: var(--leading-body); font-weight: var(--weight-bold); }
+.alert__message { margin: 0 0 var(--space-4); font-size: var(--text-subheadline); line-height: var(--leading-subheadline); }
+.alert__buttons { display: flex; gap: var(--space-2); }
+.alert__buttons > .btn { flex: 1; min-width: 0; }
+@keyframes mac-alert-in { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: none; } }
+
+/* Sheet: a card over its dimmed parent window. Buttons on the trailing end of a bottom row. */
+.sheet {
+  width: min(480px, calc(100vw - 2 * var(--space-4)));
+  background: var(--color-dialog);
+  border: var(--line-hair) solid var(--color-border);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-window);
+  overflow: hidden;
+}
+.sheet__body { padding: var(--space-5); }
+.sheet__footer { display: flex; justify-content: flex-end; gap: var(--space-2); padding: 0 var(--space-5) var(--space-5); }
+
+/* ---------- Status glyphs (docs/06-iconography.md) ---------- */
+
+.status { display: inline-flex; align-items: center; gap: 6px; }
+.status::before {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  box-sizing: border-box;
+}
+.status--ok::before      { background: var(--color-status-ok); }
+.status--pending::before { border: 1.5px solid var(--color-status-pending); background: linear-gradient(90deg, var(--color-status-pending) 50%, transparent 50%); }
+.status--idle::before    { border: 1.5px solid var(--color-status-idle); }
+.status--info::before    { width: 6px; height: 6px; margin: 0 1.5px; background: var(--color-info); }
+.status--warning::before {
+  width: 10px;
+  border-radius: 1px;
+  background: var(--color-status-warning);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+/* Error: an octagon, Apple's shape for stop and error (xmark.octagon). */
+.status--danger::before {
+  width: 10px;
+  height: 10px;
+  border-radius: 0;
+  background: var(--color-status-danger);
+  clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%);
+}

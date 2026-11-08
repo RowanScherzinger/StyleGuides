@@ -1,0 +1,329 @@
+/*
+ * macOS design tokens: the single source of truth.
+ *
+ * Copy this file into an app and use var(--token) everywhere.
+ * Rules for each group live in docs/; reasons live in decisions/.
+ *
+ * The look is the default macOS app style (decisions/0002), current release macOS 27.
+ * Sources, fetched 2026-11-08 from Apple's Human Interface Guidelines (HIG):
+ *   - System colours: HIG > Color > Specifications (light, dark, increased contrast light and
+ *     dark). The values are in the swatch images' alt text.
+ *   - Type ramp and tracking: HIG > Typography > macOS built-in text styles.
+ *   - Minimum sizes and contrast: HIG > Accessibility.
+ *   - Menu bar height: HIG > The menu bar.
+ * The AppKit (NSColor) or SwiftUI name is in each comment, so a native app can map it.
+ *
+ * Apple doesn't publish values for the neutral AppKit colours (window background, label
+ * greys, separators), corner radii, most control sizes or durations. Those are marked
+ * (Proposed): close to what AppKit draws, but not copied from an Apple document. Check them
+ * against a Mac and replace them when a better source turns up (decisions/0001).
+ *
+ * Light and dark follow the system (decisions/0003). Every colour is one light-dark() pair,
+ * so the variant is picked by color-scheme:
+ *   nothing set                follows the OS (prefers-color-scheme)
+ *   <html data-theme="light">  forces light
+ *   <html data-theme="dark">   forces dark
+ * Increase Contrast (prefers-contrast: more) swaps in Apple's increased-contrast values.
+ *
+ * Semantic names match the Win11 guide where the role is the same (decisions/0009), so an
+ * app that offers both looks can switch by swapping files.
+ *
+ * Layers:
+ *   1. Palette   (--palette-*)  raw colours, never used directly in components
+ *   2. Semantic  (--color-*)    roles that components use
+ *   3. Scales    type, space, shape, elevation, motion, z-index
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---------- 1. Palette (docs/01-color.md) ---------- */
+  /* Apple system colours: default light, default dark, increased contrast light, increased
+     contrast dark. HIG > Color > Specifications. */
+
+  --palette-red:         #ff383c;  --palette-red-dark:     #ff4245;  /* Color.red */
+  --palette-red-ic:      #e9152d;  --palette-red-ic-dark:  #ff6165;
+  --palette-orange:      #ff8d28;  --palette-orange-dark:  #ff9230;  /* Color.orange */
+  --palette-orange-ic:   #c55300;  --palette-orange-ic-dark: #ffa056;
+  --palette-yellow:      #ffcc00;  --palette-yellow-dark:  #ffd600;  /* Color.yellow */
+  --palette-yellow-ic:   #a16a00;  --palette-yellow-ic-dark: #fedf43;
+  --palette-green:       #34c759;  --palette-green-dark:   #30d158;  /* Color.green */
+  --palette-green-ic:    #008932;  --palette-green-ic-dark: #4ad968;
+  --palette-mint:        #00c8b3;  --palette-mint-dark:    #00dac3;  /* Color.mint */
+  --palette-teal:        #00c3d0;  --palette-teal-dark:    #00d2e0;  /* Color.teal */
+  --palette-cyan:        #00c0e8;  --palette-cyan-dark:    #3cd3fe;  /* Color.cyan */
+  --palette-blue:        #0088ff;  --palette-blue-dark:    #0091ff;  /* Color.blue */
+  --palette-blue-ic:     #1e6ef4;  --palette-blue-ic-dark: #5cb8ff;
+  --palette-indigo:      #6155f5;  --palette-indigo-dark:  #6d7cff;  /* Color.indigo */
+  --palette-purple:      #cb30e0;  --palette-purple-dark:  #db34f2;  /* Color.purple */
+  --palette-purple-ic:   #b02fc2;  --palette-purple-ic-dark: #ea8dff;
+  --palette-pink:        #ff2d55;  --palette-pink-dark:    #ff375f;  /* Color.pink */
+  --palette-pink-ic:     #e7124d;  --palette-pink-ic-dark: #ff8ac4;
+  --palette-brown:       #ac7f5e;  --palette-brown-dark:   #b78a66;  /* Color.brown */
+  /* Gray: HIG publishes it for iOS only (systemGray); SwiftUI's Color.gray is the same. */
+  --palette-gray:        #8e8e93;  --palette-gray-dark:    #8e8e93;
+  --palette-gray-ic:     #6c6c70;  --palette-gray-ic-dark: #aeaeb2;
+
+  /* Accent: the user's accent colour (System Settings > Appearance), decisions/0004.
+     Default blue, as with "Multicolor". An app that can read the system accent overwrites
+     these four (docs/07-theming.md). */
+  --palette-accent:         var(--palette-blue);
+  --palette-accent-dark:    var(--palette-blue-dark);
+  --palette-accent-ic:      var(--palette-blue-ic);
+  --palette-accent-ic-dark: var(--palette-blue-ic-dark);
+
+  /* ---------- 2. Semantic colour (docs/01-color.md) ---------- */
+  /* light-dark(<light>, <dark>) throughout. Neutral values are (Proposed): see the header. */
+
+  /* Backgrounds */
+  --color-bg:             light-dark(#ececec, #323232);                 /* windowBackgroundColor (Proposed values) */
+  --color-bg-elevated:    light-dark(#f6f6f6, #2b2b2b);                 /* toolbar/title bar without glass (Proposed) */
+  --color-content:        light-dark(#ffffff, #1e1e1e);                 /* controlBackgroundColor, textBackgroundColor: lists, tables, text views (Proposed values) */
+  --color-content-alt:    light-dark(#f4f5f5, rgba(255, 255, 255, 0.04)); /* alternatingContentBackgroundColors[1] (Proposed values) */
+  --color-surface:        light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.05)); /* grouped form section / box fill (Proposed) */
+  --color-surface-hover:  light-dark(rgba(0, 0, 0, 0.07), rgba(255, 255, 255, 0.08)); /* (Proposed) */
+  --color-surface-raised: light-dark(#f6f6f6, #2b2b2b);                 /* menu, popover: glass's solid fallback (Proposed) */
+  --color-dialog:         light-dark(#f6f6f6, #2b2b2b);                 /* alert, sheet (Proposed) */
+  --color-sidebar:        light-dark(#e3e3e3, #282828);                 /* sidebar: glass's solid fallback (Proposed) */
+
+  /* Controls */
+  --color-control:          light-dark(#ffffff, rgba(255, 255, 255, 0.20)); /* controlColor: push button, pop-up (Proposed values) */
+  --color-control-hover:    light-dark(#fafafa, rgba(255, 255, 255, 0.25)); /* (Proposed) */
+  --color-control-pressed:  light-dark(#e6e6e6, rgba(255, 255, 255, 0.32)); /* (Proposed) */
+  --color-control-disabled: light-dark(rgba(255, 255, 255, 0.50), rgba(255, 255, 255, 0.10)); /* (Proposed) */
+  --color-input:            light-dark(#ffffff, rgba(255, 255, 255, 0.06)); /* textBackgroundColor in a text field (Proposed) */
+  --color-toggle-off:       light-dark(rgba(0, 0, 0, 0.09), rgba(255, 255, 255, 0.14)); /* switch track, off (Proposed) */
+  --color-knob:             #ffffff;                                      /* switch knob, both modes */
+
+  /* Subtle: no fill at rest (sidebar rows, toolbar buttons) */
+  --color-subtle-hover:   light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.07));  /* (Proposed) */
+  --color-subtle-pressed: light-dark(rgba(0, 0, 0, 0.09), rgba(255, 255, 255, 0.11));  /* (Proposed) */
+
+  /* Strokes */
+  --color-border:        light-dark(rgba(0, 0, 0, 0.10), rgba(255, 255, 255, 0.10));  /* separatorColor (Proposed values) */
+  --color-border-strong: light-dark(rgba(0, 0, 0, 0.22), rgba(255, 255, 255, 0.22));  /* control bezel, check box, radio (Proposed) */
+  --color-divider:       var(--color-border);                                          /* separatorColor */
+  --color-grid:          light-dark(#e6e6e6, #1a1a1a);                                /* gridColor: table lines (Proposed values) */
+
+  /* Text */
+  --color-text:          light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.85));  /* labelColor (Proposed values) */
+  --color-text-strong:   light-dark(#000000, #ffffff);                                 /* textColor: document text */
+  --color-text-muted:    light-dark(rgba(0, 0, 0, 0.50), rgba(255, 255, 255, 0.55));  /* secondaryLabelColor (Proposed values) */
+  --color-text-dim:      light-dark(rgba(0, 0, 0, 0.26), rgba(255, 255, 255, 0.25));  /* tertiaryLabelColor, placeholderTextColor (Proposed values) */
+  --color-text-disabled: var(--color-text-dim);                                        /* disabledControlTextColor */
+  --color-text-faint:    light-dark(rgba(0, 0, 0, 0.10), rgba(255, 255, 255, 0.10));  /* quaternaryLabelColor: watermarks only (Proposed values) */
+
+  /* Accent: the default button, selection, switches and boxes that are on, progress, links */
+  --color-accent:          light-dark(var(--palette-accent), var(--palette-accent-dark));      /* controlAccentColor */
+  --color-accent-hover:    color-mix(in srgb, var(--color-accent) 88%, black);                 /* (Proposed) */
+  --color-accent-pressed:  color-mix(in srgb, var(--color-accent) 76%, black);                 /* (Proposed) */
+  --color-accent-disabled: light-dark(rgba(0, 0, 0, 0.10), rgba(255, 255, 255, 0.10));        /* (Proposed) */
+  /* (Proposed) Accent as text: the increased-contrast shade in light, because the default
+     fails as text there (docs/01-color.md). AppKit's linkColor is likewise darker than the accent. */
+  --color-accent-text:     light-dark(var(--palette-accent-ic), var(--palette-accent-dark));   /* linkColor */
+  --color-on-accent:       #ffffff;                                                            /* alternateSelectedControlTextColor */
+  --color-on-accent-muted: rgba(255, 255, 255, 0.75);
+  --color-selection:       var(--color-accent);                                                /* selectedContentBackgroundColor (key window) */
+  --color-selection-inactive: light-dark(#dcdcdc, #464646);                                    /* unemphasizedSelectedContentBackgroundColor (Proposed values) */
+  --color-text-selection:  color-mix(in srgb, var(--color-accent) 30%, transparent);           /* selectedTextBackgroundColor (Proposed) */
+  /* (Proposed) A faint accent tint for selected tiles in a grid. Not an AppKit colour. */
+  --color-accent-soft:     color-mix(in srgb, var(--color-accent) 14%, transparent);
+
+  /* Status (docs/01-color.md: Status). Colour is never the only signal.
+     (Proposed) Light mode uses the increased-contrast shades: the defaults are too pale for
+     glyphs (green 1.9:1 on the window). Dark mode uses the defaults. */
+  --color-status-ok:      light-dark(var(--palette-green-ic), var(--palette-green-dark));
+  --color-status-warning: light-dark(var(--palette-orange-ic), var(--palette-orange-dark));  /* orange, not yellow: yellow can't be read on light */
+  --color-status-danger:  light-dark(var(--palette-red-ic), var(--palette-red-dark));
+  --color-status-idle:    light-dark(var(--palette-gray-ic), var(--palette-gray-dark));
+  --color-status-pending: var(--color-accent);
+  --color-info:           var(--color-accent);
+  /* Fills for banners: the status colour at low strength (Proposed) */
+  --color-ok-fill:      color-mix(in srgb, var(--color-status-ok) 14%, transparent);
+  --color-warning-fill: color-mix(in srgb, var(--color-status-warning) 16%, transparent);
+  --color-danger-fill:  color-mix(in srgb, var(--color-status-danger) 14%, transparent);
+  --color-info-fill:    color-mix(in srgb, var(--color-accent) 12%, transparent);
+  /* Destructive buttons use system red (HIG > Buttons: destructive role) */
+  --color-danger:       light-dark(var(--palette-red), var(--palette-red-dark));
+  --color-danger-text:  var(--color-status-danger);
+  /* (Proposed) Destructive push button: red text on the white bezel in light (4.6:1). In dark,
+     red text on the grey bezel is 2.0:1, so it becomes a red fill with bold white text (3.4:1). */
+  --color-danger-button:      light-dark(var(--color-control), var(--color-danger));
+  --color-danger-button-text: light-dark(var(--color-danger-text), #ffffff);
+
+  /* Focus: the keyboard focus ring (keyboardFocusIndicatorColor): the accent, translucent */
+  --color-focus: color-mix(in srgb, var(--color-accent) 50%, transparent);  /* (Proposed strength) */
+
+  /* Overlays */
+  --color-smoke: light-dark(rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.40));      /* dimmed parent window under a sheet (Proposed) */
+  /* (Proposed) Chips over photos: black at 55%, so white chip text keeps 4.7:1 even over a
+     white photo. Stronger than the HIG's 35% dimming layer, which is for under clear glass. */
+  --color-scrim: rgba(0, 0, 0, 0.55);
+  --color-on-scrim: #ffffff;
+
+  /* ---------- 3a. Typography (docs/02-typography.md) ---------- */
+
+  /* System fonts only: SF Pro and SF Mono can't be shipped with an app or page (decisions/0005). */
+  --font-sans:    -apple-system, BlinkMacSystemFont, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: var(--font-sans);   /* SF Pro picks Display or Text by size on its own */
+  --font-rounded: ui-rounded, var(--font-sans);
+  --font-mono:    ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* The macOS text styles (HIG > Typography): size / line height. 1pt = 1 CSS px. */
+  --text-large-title: 1.625rem;   /* 26 / 32 */
+  --text-title-1:     1.375rem;   /* 22 / 26 */
+  --text-title-2:     1.0625rem;  /* 17 / 22 */
+  --text-title-3:     0.9375rem;  /* 15 / 20 */
+  --text-headline:    0.8125rem;  /* 13 / 16, bold */
+  --text-body:        0.8125rem;  /* 13 / 16: the default */
+  --text-callout:     0.75rem;    /* 12 / 15 */
+  --text-subheadline: 0.6875rem;  /* 11 / 14 */
+  --text-footnote:    0.625rem;   /* 10 / 13 */
+  --text-caption:     0.625rem;   /* 10 / 13 (Caption 1 regular, Caption 2 medium) */
+
+  --leading-large-title: 2rem;
+  --leading-title-1:     1.625rem;
+  --leading-title-2:     1.375rem;
+  --leading-title-3:     1.25rem;
+  --leading-body:        1rem;
+  --leading-callout:     0.9375rem;
+  --leading-subheadline: 0.875rem;
+  --leading-caption:     0.8125rem;
+
+  /* Tracking (HIG > Typography > macOS tracking values), in em so it scales with the size */
+  --tracking-large-title: 0.008em;
+  --tracking-title-1:    -0.012em;
+  --tracking-title-2:    -0.026em;
+  --tracking-title-3:    -0.016em;
+  --tracking-body:       -0.006em;
+  --tracking-callout:     0;
+  --tracking-subheadline: 0.006em;
+  --tracking-caption:     0.012em;
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-heavy:    800;
+
+  /* ---------- 3b. Spacing (docs/03-spacing-layout.md) ---------- */
+  /* (Proposed) A 4px scale. 8 and 20 are AppKit's standard spacing and window margin. */
+
+  --space-0:  0;
+  --space-1:  0.25rem;  /* 4px */
+  --space-2:  0.5rem;   /* 8px: between controls (standard spacing) */
+  --space-3:  0.75rem;  /* 12px: between groups of controls */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px: window margin */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+
+  --control-height:       28px;  /* HIG > Accessibility: default control size 28x28 pt */
+  --control-height-small: 20px;  /* HIG > Accessibility: minimum control size 20x20 pt */
+  --row-height:           28px;  /* list and sidebar row, medium sidebar size (Proposed) */
+  --row-height-table:     24px;  /* table row (Proposed) */
+  --menubar-height:       24px;  /* HIG > The menu bar */
+  --toolbar-height:       52px;  /* unified title bar and toolbar (Proposed) */
+  --sidebar-width:        220px; /* (Proposed) */
+
+  /* ---------- 3c. Shape (docs/04-components.md) ---------- */
+  /* (Proposed) Apple doesn't publish radii. Concentric: inner = outer - padding. */
+
+  --radius-none:    0;
+  --radius-small:   4px;       /* check box, menu-item highlight inset, tooltip */
+  --radius-control: 7px;       /* push button, text field, pop-up button, sidebar row */
+  --radius-box:     10px;      /* grouped form section, box, banner */
+  --radius-overlay: 12px;      /* menu, popover, alert, sheet */
+  --radius-window:  16px;      /* window, sidebar inset */
+  --radius-full:    9999px;    /* switch, radio, capsule toolbar buttons, badges */
+
+  --line-hair:  1px;
+  --line-focus: 3px;           /* focus ring width (Proposed) */
+
+  /* Elevation: windows, menus and popovers float; content inside a window doesn't */
+  --shadow-color-ambient: light-dark(rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.40));
+  --shadow-color-key:     light-dark(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.50));
+  --shadow-control: 0 0.5px 1px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.30));       /* push button lift (Proposed) */
+  --shadow-menu:    0 0 0 0.5px var(--shadow-color-ambient), 0 8px 24px var(--shadow-color-key);
+  --shadow-window:  0 0 0 0.5px var(--shadow-color-ambient), 0 22px 70px var(--shadow-color-key);
+
+  /* Liquid Glass, where the platform can blur (docs/07-theming.md: Materials) */
+  --glass-blur: 24px;
+  --glass-tint: light-dark(rgba(246, 246, 246, 0.72), rgba(40, 40, 40, 0.72));     /* (Proposed) regular glass */
+  --glass-edge: light-dark(rgba(255, 255, 255, 0.60), rgba(255, 255, 255, 0.12));  /* (Proposed) highlight along the top edge */
+
+  /* ---------- 3d. Motion (docs/05-motion.md) ---------- */
+  /* Core Animation's documented defaults: 0.25 s and the named timing functions. */
+
+  --duration-fast:   150ms;   /* (Proposed) hover, press, colour */
+  --duration-normal: 250ms;   /* CATransaction / NSAnimationContext default duration */
+  --duration-slow:   500ms;   /* SwiftUI .smooth / .snappy default duration: sheets, larger moves */
+
+  --ease-default:   cubic-bezier(0.25, 0.1, 0.25, 1);   /* CAMediaTimingFunction default */
+  --ease-in-out:    cubic-bezier(0.42, 0, 0.58, 1);     /* easeInEaseOut */
+  --ease-out:       cubic-bezier(0, 0, 0.58, 1);        /* easeOut: entrances */
+  --ease-in:        cubic-bezier(0.42, 0, 1, 1);        /* easeIn: exits */
+  --ease-spring:    cubic-bezier(0.2, 0.9, 0.25, 1);    /* (Proposed) a no-bounce spring, approximated */
+  --ease-standard:  var(--ease-default);
+
+  --loop-spinner: 1s;   /* (Proposed) spinner rotation */
+
+  /* ---------- 3e. Layering ---------- */
+
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-modal:    200;
+  --z-toast:    300;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"]  { color-scheme: dark; }
+
+/* Increase Contrast (System Settings > Accessibility > Display). Apple's increased-contrast
+   system colours; the neutral steps are (Proposed). */
+@media (prefers-contrast: more) {
+  :root {
+    --color-text-muted:    light-dark(rgba(0, 0, 0, 0.70), rgba(255, 255, 255, 0.75));
+    --color-text-dim:      light-dark(rgba(0, 0, 0, 0.50), rgba(255, 255, 255, 0.50));
+    --color-border:        light-dark(rgba(0, 0, 0, 0.30), rgba(255, 255, 255, 0.30));
+    --color-border-strong: light-dark(rgba(0, 0, 0, 0.55), rgba(255, 255, 255, 0.55));
+    /* Fill: increased contrast in light. Dark keeps the default: white text on the paler
+       increased-contrast blue measures only 2.2:1. */
+    --color-accent:        light-dark(var(--palette-accent-ic), var(--palette-accent-dark));
+    --color-accent-text:   light-dark(var(--palette-accent-ic), var(--palette-accent-ic-dark));
+    --color-status-ok:     light-dark(var(--palette-green-ic), var(--palette-green-ic-dark));
+    --color-status-warning: light-dark(var(--palette-orange-ic), var(--palette-orange-ic-dark));
+    --color-status-danger: light-dark(var(--palette-red-ic), var(--palette-red-ic-dark));
+    --color-status-idle:   light-dark(var(--palette-gray-ic), var(--palette-gray-ic-dark));
+    --color-danger:        light-dark(var(--palette-red-ic), var(--palette-red-dark));
+    --color-focus:         var(--color-accent);
+  }
+}
+
+/* Reduce Transparency: glass goes solid (docs/07-theming.md). */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-tint: var(--color-surface-raised);
+    --glass-blur: 0px;
+  }
+}
+
+/* Reduce Motion (System Settings > Accessibility > Display). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast:   0ms;
+    --duration-normal: 0ms;
+    --duration-slow:   0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

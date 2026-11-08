@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="darkreader-lock">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>macOS Preview</title>
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/macos.css">
+<style>
+  /* Preview-only layout. Components come from macos.css. */
+  body { overflow-x: hidden; padding: var(--space-5); box-sizing: border-box; }
+  .window {
+    display: flex;
+    flex-direction: column;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: calc(100vh - 2 * var(--space-5));
+    background: var(--color-bg);
+    border: var(--line-hair) solid var(--color-border);
+    border-radius: var(--radius-window);
+    box-shadow: var(--shadow-window);
+    overflow: hidden;
+  }
+  .lights { display: flex; gap: 8px; margin-right: var(--space-3); }
+  .lights i { width: 12px; height: 12px; border-radius: 50%; }
+  /* Window controls: preview decoration only, not tokens. */
+  .lights i:nth-child(1) { background: #ff5f57; }
+  .lights i:nth-child(2) { background: #febc2e; }
+  .lights i:nth-child(3) { background: #28c840; }
+  .toolbar { flex-wrap: wrap; gap: var(--space-2); padding-top: var(--space-2); padding-bottom: var(--space-2); }
+  .frame { display: flex; flex: 1; min-height: 0; }
+  main { flex: 1; min-width: 0; padding: var(--space-5) var(--space-8) var(--space-10); }
+  .content { max-width: 680px; margin: 0 auto; }
+  h1 { margin: 0 0 var(--space-4); }
+  h2 { margin: var(--space-8) 0 var(--space-2); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+  .stack { display: flex; flex-direction: column; gap: var(--space-2); }
+  .grid2 { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+  .icon { width: 16px; height: 16px; flex: none; }
+  .ramp div { padding: 3px 0; }
+  .ramp .meta { color: var(--color-text-muted); font-size: var(--text-subheadline); margin-left: var(--space-2); letter-spacing: 0; }
+  .callout svg { flex: none; width: 16px; height: 16px; margin-top: 0; }
+  .accent-dots { display: inline-flex; gap: 6px; align-items: center; }
+  .accent-dots button { width: 16px; height: 16px; padding: 0; border-radius: 50%; border: var(--line-hair) solid var(--color-border-strong); cursor: default; }
+  .accent-dots button[aria-pressed="true"] { outline: 2px solid var(--color-text-muted); outline-offset: 2px; }
+  .tiles { display: flex; gap: var(--space-2); }
+  .tile { position: relative; width: 96px; height: 72px; border-radius: var(--radius-box); overflow: hidden; background: var(--color-surface); }
+  .tile.is-selected { outline: 3px solid var(--color-accent); outline-offset: 1px; }
+  .tile .chip { position: absolute; left: 6px; top: 6px; padding: 0 6px; border-radius: var(--radius-full); background: var(--color-scrim); color: var(--color-on-scrim); font-size: var(--text-caption); line-height: 16px; font-weight: var(--weight-medium); }
+  .photo { background: linear-gradient(135deg, #f4c27a, #5b8fd6); } /* stand-in for an image */
+  .glass-demo { position: relative; height: 120px; border-radius: var(--radius-box); overflow: hidden; background: linear-gradient(120deg, #f6a96b, #7d6bf2 55%, #3ec9c1); }
+  .glass-demo .menu { position: absolute; left: 16px; top: 16px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-2); }
+  .sw { border-radius: var(--radius-control); overflow: hidden; border: var(--line-hair) solid var(--color-border); font-size: var(--text-subheadline); }
+  .sw i { display: block; height: 36px; }
+  .sw b { display: block; padding: 6px; font-weight: var(--weight-regular); font-family: var(--font-mono); font-size: var(--text-caption); color: var(--color-text-muted); background: var(--color-content); }
+  .bars { display: flex; height: 8px; gap: 2px; border-radius: var(--radius-full); overflow: hidden; }
+  .inline-alert .alert { animation: none; margin: 0 auto; }
+  @media (max-width: 639px) { body { padding: 0; } .window { border-radius: 0; min-height: 100vh; } .sidebar { display: none; } main { padding: var(--space-4); } }
+</style>
+</head>
+<body class="mac-root">
+
+<div class="window">
+  <header class="toolbar">
+    <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span class="toolbar__title">macOS Style Guide</span>
+    <span class="segmented" role="group" aria-label="Appearance">
+      <button data-mode="system" aria-pressed="true">Auto</button>
+      <button data-mode="light" aria-pressed="false">Light</button>
+      <button data-mode="dark" aria-pressed="false">Dark</button>
+    </span>
+    <span class="accent-dots" role="group" aria-label="Accent colour" id="accents"></span>
+  </header>
+
+  <div class="frame">
+    <nav class="sidebar" aria-label="Sections">
+      <div class="sidebar__heading">Guide</div>
+      <a class="sidebar-item is-selected" href="#type"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M8 4v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>Typography</a>
+      <a class="sidebar-item" href="#controls"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="5" width="12" height="6" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="11" cy="8" r="1.5" fill="currentColor"/></svg>Controls<span class="badge">8</span></a>
+      <a class="sidebar-item" href="#status"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>Status</a>
+      <a class="sidebar-item" href="#overlays"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3" width="11" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M5 6.5h6M5 9.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Menus and Alerts</a>
+      <div class="sidebar__heading">Reference</div>
+      <a class="sidebar-item" href="#colours"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 2.5v11A5.5 5.5 0 0 1 8 2.5z" fill="currentColor"/></svg>Colours</a>
+    </nav>
+
+    <main>
+      <div class="content">
+        <h1 class="text-title-1 is-emphasized">Preview</h1>
+
+        <section id="type">
+          <h2 class="text-headline">Text Styles</h2>
+          <div class="group ramp" style="padding: var(--space-3)">
+            <div class="text-large-title">Large Title<span class="meta">26 / 32</span></div>
+            <div class="text-title-1">Title 1<span class="meta">22 / 26</span></div>
+            <div class="text-title-2">Title 2<span class="meta">17 / 22</span></div>
+            <div class="text-title-3">Title 3<span class="meta">15 / 20</span></div>
+            <div class="text-headline">Headline<span class="meta">13 / 16 bold</span></div>
+            <div class="text-body">Body: the default for everything.<span class="meta">13 / 16</span></div>
+            <div class="text-callout">Callout: secondary blocks of text.<span class="meta">12 / 15</span></div>
+            <div class="text-subheadline">Subheadline: descriptions and messages.<span class="meta">11 / 14</span></div>
+            <div class="text-caption">Caption: labels and timestamps.<span class="meta">10 / 13</span></div>
+            <div><span class="text-muted">Secondary text</span> · <span class="text-dim">Placeholder text</span> · <a href="#type" style="color: var(--color-accent-text); font-weight: var(--weight-bold)">A link</a> · <span class="mono">~/Pictures/Phone</span></div>
+          </div>
+        </section>
+
+        <section id="controls">
+          <h2 class="group-heading" style="margin-left: 0">General</h2>
+          <div class="group">
+            <div class="group__row">
+              <div class="group__label">Open when a phone is connected<div class="group__desc">Starts the app when you plug in a phone with a cable.</div></div>
+              <input class="switch switch--mini" type="checkbox" checked aria-label="Open when a phone is connected">
+            </div>
+            <div class="group__row">
+              <div class="group__label">Copy to<div class="group__desc">Pictures › Phone</div></div>
+              <button class="btn">Choose…</button>
+            </div>
+            <div class="group__row">
+              <div class="group__label">Thumbnail size</div>
+              <span class="segmented" role="group" aria-label="Thumbnail size">
+                <button aria-pressed="false">Small</button><button aria-pressed="true">Medium</button><button aria-pressed="false">Large</button>
+              </span>
+            </div>
+          </div>
+
+          <h2 class="text-headline">Buttons and Fields</h2>
+          <div class="group stack" style="padding: var(--space-3)">
+            <div class="row">
+              <button class="btn btn--destructive">Delete from Phone</button>
+              <button class="btn" disabled>Disabled</button>
+              <span style="flex: 1"></span>
+              <button class="btn">Cancel</button>
+              <button class="btn btn--default">Copy 12 Photos</button>
+            </div>
+            <div class="row">
+              <button class="btn btn--borderless btn--icon" aria-label="Share" title="Share"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8M5 5l3-3 3 3M3.5 8.5v4.5h9V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>
+              <button class="btn btn--borderless btn--icon" aria-label="Delete" title="Delete"><svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4.5h10M6 4.5V3h4v1.5M4.5 4.5l.7 8.5h5.6l.7-8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></button>
+              <input class="input input--search" type="search" placeholder="Search" aria-label="Search" style="width: 180px">
+            </div>
+            <label class="field"><span>Folder Name:</span><input class="input" placeholder="Holiday 2026"></label>
+            <div class="row" style="gap: var(--space-5)">
+              <div class="stack" style="gap: var(--space-1)">
+                <label class="choice"><input class="check" type="checkbox" checked> Skip files already on this Mac</label>
+                <label class="choice"><input class="check" type="checkbox"> Delete from the phone after copying</label>
+                <label class="choice"><input class="check" type="checkbox" id="mixed"> Include videos (some)</label>
+              </div>
+              <div class="stack" style="gap: var(--space-1)">
+                <label class="choice"><input class="radio" type="radio" name="fmt" checked> Keep originals</label>
+                <label class="choice"><input class="radio" type="radio" name="fmt"> Convert to JPEG</label>
+              </div>
+              <input class="switch" type="checkbox" checked aria-label="Sync">
+            </div>
+          </div>
+
+          <h2 class="text-headline">List</h2>
+          <div class="list list--alternating" tabindex="0" aria-label="Albums (click to focus)">
+            <div class="list-item is-selected"><span style="flex:1">Everything</span><span class="text-muted">1,204</span></div>
+            <div class="list-item"><span style="flex:1">New Since Last Time</span><span class="badge">12</span></div>
+            <div class="list-item"><span style="flex:1">Already on This Mac</span><span class="text-muted">310</span></div>
+            <div class="list-item"><span style="flex:1">Screenshots</span><span class="text-muted">88</span></div>
+          </div>
+          <p class="text-subheadline text-muted">Click the list to focus it: the selection turns from grey to the accent.</p>
+        </section>
+
+        <section id="status">
+          <h2 class="text-headline">Status</h2>
+          <div class="stack">
+            <div class="callout"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" style="fill: var(--color-info)"/><rect x="7.25" y="7" width="1.5" height="4.5" rx=".75" fill="#fff"/><circle cx="8" cy="4.9" r="1" fill="#fff"/></svg><div><span class="callout__title">Update Available</span>Version 1.2 installs when you quit the app.</div></div>
+            <div class="callout callout--ok"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" style="fill: var(--color-status-ok)"/><path d="M5 8.2l2 2 4-4.3" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><span class="callout__title">Copy Complete</span>12 photos copied to Pictures › Phone.</div></div>
+            <div class="callout callout--warning"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5l7 12.5H1z" style="fill: var(--color-status-warning); stroke: var(--color-status-warning)" stroke-linejoin="round"/><rect x="7.25" y="5.5" width="1.5" height="4.5" rx=".75" fill="#fff"/><circle cx="8" cy="11.9" r="1" fill="#fff"/></svg><div><span class="callout__title">Phone Is Locked</span>Unlock it to see new photos.</div></div>
+            <div class="callout callout--danger"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.1 1h5.8L15 5.1v5.8L10.9 15H5.1L1 10.9V5.1z" style="fill: var(--color-status-danger)"/><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg><div><span class="callout__title">Couldn't Copy 3 Photos</span>The phone was disconnected. Connect it and try again.</div></div>
+          </div>
+          <div class="grid2" style="margin-top: var(--space-4)">
+            <div class="group stack" style="padding: var(--space-3)">
+              <span class="status status--ok">Connected</span>
+              <span class="status status--pending">Scanning</span>
+              <span class="status status--idle">No device</span>
+              <span class="status status--warning">Locked</span>
+              <span class="status status--danger">Disconnected</span>
+              <span class="status status--info">New</span>
+            </div>
+            <div class="group stack" style="padding: var(--space-3)">
+              <div class="text-subheadline text-muted">Copying 5 of 12</div>
+              <div class="progress"><span style="width: 42%"></span></div>
+              <div class="text-subheadline text-muted">Looking for a phone</div>
+              <div class="progress progress--indeterminate"><span></span></div>
+              <div class="row"><div class="spinner" role="img" aria-label="Working"></div><span class="badge">3</span><span class="badge badge--danger">2</span></div>
+              <div class="text-subheadline text-muted">Phone storage: 96 of 128 GB</div>
+              <div class="bars"><span style="flex:48; background: var(--palette-blue)"></span><span style="flex:30; background: var(--palette-purple)"></span><span style="flex:18; background: var(--palette-orange)"></span><span style="flex:32; background: var(--color-toggle-off)"></span></div>
+            </div>
+          </div>
+          <div class="tiles" style="margin-top: var(--space-4)">
+            <div class="tile photo"><span class="chip">Live</span></div>
+            <div class="tile photo is-selected"><span class="chip">0:42</span></div>
+            <div class="tile"></div>
+          </div>
+        </section>
+
+        <section id="overlays">
+          <h2 class="text-headline">Menu, Glass, Alert</h2>
+          <div class="grid2">
+            <div class="stack">
+              <div class="menu" style="width: 220px" role="menu">
+                <div class="menu-item">Copy<span class="menu-item__key">⌘C</span></div>
+                <div class="menu-item is-highlighted">Show in Finder<span class="menu-item__key">⌥⌘R</span></div>
+                <div class="menu-item">Export…<span class="menu-item__key">⇧⌘E</span></div>
+                <hr class="divider">
+                <div class="menu-item is-disabled">Rename</div>
+                <div class="menu-item">Move to Trash<span class="menu-item__key">⌘⌫</span></div>
+              </div>
+              <span class="tooltip">Copy the selected items to this Mac</span>
+              <div class="glass-demo">
+                <div class="menu glass" style="width: 200px">
+                  <div class="menu-item">On Glass</div>
+                  <div class="menu-item is-highlighted">Over Rich Content</div>
+                </div>
+              </div>
+              <div><button class="btn btn--default" id="open-alert">Show Alert</button></div>
+            </div>
+            <div class="inline-alert">
+              <div class="alert" role="presentation">
+                <svg class="alert__icon" viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" rx="12" style="fill: var(--color-accent)"/><rect x="20" y="16" width="24" height="32" rx="4" fill="none" stroke="#fff" stroke-width="3"/></svg>
+                <h3 class="alert__title">Delete 12 photos from the phone?</h3>
+                <p class="alert__message">Copies on this Mac stay. You can't undo this action.</p>
+                <div class="alert__buttons"><button class="btn">Cancel</button><button class="btn btn--destructive">Delete</button></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="colours">
+          <h2 class="text-headline">Colour Roles</h2>
+          <div class="swatches" id="swatches"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="smoke" id="smoke" hidden>
+  <div class="alert" role="alertdialog" aria-modal="true" aria-labelledby="alert-title" aria-describedby="alert-msg">
+    <svg class="alert__icon" viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" rx="12" style="fill: var(--color-accent)"/><rect x="20" y="16" width="24" height="32" rx="4" fill="none" stroke="#fff" stroke-width="3"/></svg>
+    <h3 class="alert__title" id="alert-title">Copy 12 photos to this Mac?</h3>
+    <p class="alert__message" id="alert-msg">They'll go to Pictures › Phone. Files already there are skipped.</p>
+    <div class="alert__buttons"><button class="btn" data-close>Cancel</button><button class="btn btn--default" data-close>Copy</button></div>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const press = (sel, btn) => document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+
+  document.querySelectorAll("[data-mode]").forEach(btn => btn.addEventListener("click", () => {
+    if (btn.dataset.mode === "system") delete root.dataset.theme; else root.dataset.theme = btn.dataset.mode;
+    press("[data-mode]", btn);
+  }));
+
+  // The macOS accent choices, each mapped to the system colour of the same name (graphite: gray).
+  const accents = ["blue", "purple", "pink", "red", "orange", "yellow", "green", "gray"];
+  const names = { gray: "Graphite" };
+  const bar = document.getElementById("accents");
+  accents.forEach((a, i) => {
+    const b = document.createElement("button");
+    b.style.background = `var(--palette-${a})`;
+    b.setAttribute("aria-pressed", String(i === 0));
+    b.setAttribute("aria-label", names[a] || a[0].toUpperCase() + a.slice(1));
+    b.title = b.getAttribute("aria-label");
+    b.addEventListener("click", () => {
+      // Point the four accent shades at the chosen colour's four (all of these have IC shades).
+      ["","-dark", "-ic", "-ic-dark"].forEach(s =>
+        a === "blue" ? root.style.removeProperty(`--palette-accent${s}`)
+                     : root.style.setProperty(`--palette-accent${s}`, `var(--palette-${a}${s})`));
+      press("#accents button", b);
+    });
+    bar.appendChild(b);
+  });
+
+  document.getElementById("mixed").indeterminate = true;
+
+  document.querySelectorAll(".segmented:not([aria-label='Appearance']) > button").forEach(btn =>
+    btn.addEventListener("click", () => btn.parentElement.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b === btn)))));
+
+  const smoke = document.getElementById("smoke");
+  document.getElementById("open-alert").addEventListener("click", () => { smoke.hidden = false; smoke.querySelector(".btn--default").focus(); });
+  smoke.addEventListener("click", e => { if (e.target === smoke || e.target.hasAttribute("data-close")) smoke.hidden = true; });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") smoke.hidden = true; });
+
+  const roles = ["bg", "bg-elevated", "sidebar", "content", "surface", "surface-raised", "control", "border", "border-strong",
+    "text", "text-muted", "text-dim", "accent", "accent-text", "selection-inactive",
+    "status-ok", "status-warning", "status-danger", "status-idle", "ok-fill", "warning-fill", "danger-fill", "focus"];
+  document.getElementById("swatches").innerHTML = roles.map(r =>
+    `<div class="sw"><i style="background: var(--color-${r})"></i><b>--color-${r}</b></div>`).join("");
+</script>
+</body>
+</html>
