@@ -1,0 +1,233 @@
+/*
+ * Win11 design tokens: the single source of truth.
+ *
+ * Copy this file into an app and use var(--token) everywhere.
+ * Rules for each group live in docs/; reasons live in decisions/.
+ *
+ * The look is the default Windows 11 app (Fluent) style (decisions/0002). Colours are
+ * mirrored from WinUI's Common_themeresources_any.xaml (microsoft/microsoft-ui-xaml,
+ * controls/dev/CommonStyles), copied 2026-11-08. The WinUI resource name is in each comment.
+ *
+ * Light and dark follow the system (decisions/0003). Every colour is one light-dark() pair,
+ * so the variant is picked by color-scheme:
+ *   nothing set              follows the OS (prefers-color-scheme)
+ *   <html data-theme="light">  forces light
+ *   <html data-theme="dark">   forces dark
+ *
+ * Layers:
+ *   1. Palette   (--palette-*)  raw colours, never used directly in components
+ *   2. Semantic  (--color-*)    roles that components use
+ *   3. Scales    type, space, shape, elevation, motion, z-index
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---------- 1. Palette (docs/01-color.md) ---------- */
+
+  /* Accent: the user's Windows accent colour (decisions/0004). These are the shades Windows
+     derives from the default blue; an app that can read the system accent overwrites all
+     seven (docs/07-theming.md). */
+  --palette-accent-light-3: #99ebff;
+  --palette-accent-light-2: #60cdff;
+  --palette-accent-light-1: #0093f9;
+  --palette-accent-base:    #0078d4;
+  --palette-accent-dark-1:  #005fb8;
+  --palette-accent-dark-2:  #003e92;
+  --palette-accent-dark-3:  #001968;
+
+  /* ---------- 2. Semantic colour (docs/01-color.md) ---------- */
+  /* light-dark(<light>, <dark>) throughout. */
+
+  /* Backgrounds: the window (Mica's solid fallback), the content layer on it, and flyouts */
+  --color-bg:             light-dark(#f3f3f3, #202020);                  /* SolidBackgroundFillColorBase */
+  --color-bg-secondary:   light-dark(#eeeeee, #1c1c1c);                  /* SolidBackgroundFillColorSecondary */
+  --color-bg-elevated:    light-dark(#f9f9f9, #282828);                  /* SolidBackgroundFillColorTertiary: toolbars */
+  --color-layer:          light-dark(rgba(255, 255, 255, 0.50), rgba(58, 58, 58, 0.30)); /* LayerFillColorDefault */
+  --color-surface-raised: light-dark(#f9f9f9, #2c2c2c);                  /* flyout/menu: acrylic's solid fallback */
+  --color-dialog:         light-dark(#ffffff, #2b2b2b);                  /* ContentDialog body */
+  --color-dialog-footer:  light-dark(#f3f3f3, #202020);                  /* ContentDialog button bar */
+
+  /* Cards: a translucent tint over the layer, a hairline, no shadow */
+  --color-surface:        light-dark(rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.05)); /* CardBackgroundFillColorDefault */
+  --color-surface-hover:  light-dark(rgba(246, 246, 246, 0.50), rgba(255, 255, 255, 0.03)); /* CardBackgroundFillColorSecondary */
+
+  /* Controls (buttons, inputs): rest, hover, pressed, disabled */
+  --color-control:          light-dark(rgba(255, 255, 255, 0.70), rgba(255, 255, 255, 0.06)); /* ControlFillColorDefault */
+  --color-control-hover:    light-dark(rgba(249, 249, 249, 0.50), rgba(255, 255, 255, 0.08)); /* ControlFillColorSecondary */
+  --color-control-pressed:  light-dark(rgba(249, 249, 249, 0.30), rgba(255, 255, 255, 0.03)); /* ControlFillColorTertiary */
+  --color-control-disabled: light-dark(rgba(249, 249, 249, 0.30), rgba(255, 255, 255, 0.04)); /* ControlFillColorDisabled */
+  --color-input-active:     light-dark(#ffffff, rgba(30, 30, 30, 0.70));  /* ControlFillColorInputActive: focused text box */
+  --color-control-strong:   light-dark(rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.55)); /* ControlStrongFillColorDefault: toggle knob, slider */
+  --color-control-solid:    light-dark(#ffffff, #454545);                 /* ControlSolidFillColorDefault: slider thumb */
+
+  /* Subtle: things with no fill at rest (nav items, list rows, icon buttons) */
+  --color-subtle-hover:   light-dark(rgba(0, 0, 0, 0.035), rgba(255, 255, 255, 0.06)); /* SubtleFillColorSecondary */
+  --color-subtle-pressed: light-dark(rgba(0, 0, 0, 0.024), rgba(255, 255, 255, 0.04)); /* SubtleFillColorTertiary */
+
+  /* Strokes */
+  --color-border:           light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.07));  /* ControlStrokeColorDefault */
+  --color-border-secondary: light-dark(rgba(0, 0, 0, 0.16), rgba(255, 255, 255, 0.09));  /* ControlStrokeColorSecondary: bottom edge of controls */
+  --color-border-strong:    light-dark(rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.55));  /* ControlStrongStrokeColorDefault: check box, radio, toggle */
+  --color-card-border:      light-dark(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.10));        /* CardStrokeColorDefault */
+  --color-flyout-border:    light-dark(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.20));        /* SurfaceStrokeColorFlyout */
+  --color-divider:          light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));  /* DividerStrokeColorDefault */
+
+  /* Text */
+  --color-text:          light-dark(rgba(0, 0, 0, 0.894), #ffffff);                  /* TextFillColorPrimary */
+  --color-text-strong:   var(--color-text);
+  --color-text-muted:    light-dark(rgba(0, 0, 0, 0.62), rgba(255, 255, 255, 0.773)); /* TextFillColorSecondary */
+  --color-text-dim:      light-dark(rgba(0, 0, 0, 0.447), rgba(255, 255, 255, 0.53)); /* TextFillColorTertiary: placeholders, hints */
+  --color-text-disabled: light-dark(rgba(0, 0, 0, 0.36), rgba(255, 255, 255, 0.365)); /* TextFillColorDisabled */
+
+  /* Accent: primary buttons, selection, toggles on, progress, links */
+  --color-accent:          light-dark(var(--palette-accent-dark-1), var(--palette-accent-light-2)); /* AccentFillColorDefault */
+  --color-accent-hover:    color-mix(in srgb, var(--color-accent) 90%, transparent);                /* AccentFillColorSecondary */
+  --color-accent-pressed:  color-mix(in srgb, var(--color-accent) 80%, transparent);                /* AccentFillColorTertiary */
+  --color-accent-disabled: light-dark(rgba(0, 0, 0, 0.22), rgba(255, 255, 255, 0.16));             /* AccentFillColorDisabled */
+  --color-accent-text:     light-dark(var(--palette-accent-dark-2), var(--palette-accent-light-3)); /* AccentTextFillColorPrimary: links */
+  --color-on-accent:       light-dark(#ffffff, #000000);                                           /* TextOnAccentFillColorPrimary */
+  --color-on-accent-muted: light-dark(rgba(255, 255, 255, 0.70), rgba(0, 0, 0, 0.50));            /* TextOnAccentFillColorSecondary */
+  /* (Proposed) A faint accent tint, for selected tiles and soft highlights. Not a WinUI token. */
+  --color-accent-soft:     color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-selection:       color-mix(in srgb, var(--color-accent) 22%, transparent);
+
+  /* Status (docs/01-color.md: Status). Colour is never the only signal. */
+  --color-status-ok:      light-dark(#0f7b0f, #6ccb5f);                   /* SystemFillColorSuccess */
+  --color-status-warning: light-dark(#9d5d00, #fce100);                   /* SystemFillColorCaution */
+  --color-status-danger:  light-dark(#c42b1c, #ff99a4);                   /* SystemFillColorCritical */
+  --color-status-idle:    light-dark(#8a8a8a, #9d9d9d);                   /* SystemFillColorSolidNeutral */
+  --color-status-pending: var(--color-accent);                            /* SystemFillColorAttention */
+  --color-info:           var(--color-accent);
+  --color-ok-fill:        light-dark(#dff6dd, #393d1b);                   /* SystemFillColorSuccessBackground */
+  --color-warning-fill:   light-dark(#fff4ce, #433519);                   /* SystemFillColorCautionBackground */
+  --color-danger-fill:    light-dark(#fde7e9, #442726);                   /* SystemFillColorCriticalBackground */
+  --color-info-fill:      light-dark(rgba(246, 246, 246, 0.50), rgba(255, 255, 255, 0.03)); /* SystemFillColorAttentionBackground */
+  --color-danger-text:    var(--color-status-danger);
+  --color-danger-border:  color-mix(in srgb, var(--color-status-danger) 50%, transparent); /* (Proposed) */
+
+  /* Focus: the two-ring keyboard focus visual */
+  --color-focus-outer: light-dark(rgba(0, 0, 0, 0.894), #ffffff);         /* FocusStrokeColorOuter */
+  --color-focus-inner: light-dark(rgba(255, 255, 255, 0.70), rgba(0, 0, 0, 0.70)); /* FocusStrokeColorInner */
+
+  /* Overlays */
+  --color-smoke: rgba(0, 0, 0, 0.30);                                     /* SmokeFillColorDefault: behind dialogs */
+  /* (Proposed) Chips over photos and video: the window colour, nearly opaque. */
+  --color-scrim: light-dark(rgba(249, 249, 249, 0.88), rgba(32, 32, 32, 0.80));
+
+  /* ---------- 3a. Typography (docs/02-typography.md) ---------- */
+
+  --font-sans:    "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-small:   "Segoe UI Variable Small", "Segoe UI", system-ui, sans-serif;  /* under 14px */
+  --font-mono:    "Cascadia Mono", Consolas, ui-monospace, monospace;
+  --font-icons:   "Segoe Fluent Icons", "Segoe MDL2 Assets";
+
+  /* The Windows type ramp: size / line height */
+  --text-caption:      0.75rem;   /* 12 / 16 */
+  --text-body:         0.875rem;  /* 14 / 20: the default */
+  --text-body-large:   1.125rem;  /* 18 / 24 */
+  --text-subtitle:     1.25rem;   /* 20 / 28 */
+  --text-title:        1.75rem;   /* 28 / 36 */
+  --text-title-large:  2.5rem;    /* 40 / 52 */
+  --text-display:      4.25rem;   /* 68 / 92 */
+
+  --leading-caption:     1rem;
+  --leading-body:        1.25rem;
+  --leading-body-large:  1.5rem;
+  --leading-subtitle:    1.75rem;
+  --leading-title:       2.25rem;
+  --leading-title-large: 3.25rem;
+  --leading-display:     5.75rem;
+
+  --weight-regular:  400;
+  --weight-semibold: 600;
+
+  /* ---------- 3b. Spacing (docs/03-spacing-layout.md) ---------- */
+
+  --space-0:  0;
+  --space-1:  0.25rem;  /* 4px: between related cards */
+  --space-2:  0.5rem;   /* 8px: between controls */
+  --space-3:  0.75rem;  /* 12px: control to its label */
+  --space-4:  1rem;     /* 16px: card padding */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px: dialog padding */
+  --space-8:  2rem;     /* 32px */
+  --space-9:  2.25rem;  /* 36px: page margin, narrow */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-14: 3.5rem;   /* 56px: page margin, wide */
+
+  --control-height:       32px;  /* buttons, text boxes, combo boxes */
+  --control-height-small: 24px;
+  --list-item-height:     40px;
+  --nav-item-height:      36px;
+  --titlebar-height:      48px;
+  --nav-pane-width:       320px;
+  --nav-pane-compact:     48px;
+
+  /* ---------- 3c. Shape (docs/04-components.md) ---------- */
+
+  --radius-none:    0;
+  --radius-control: 4px;      /* ControlCornerRadius: buttons, inputs, list items, check boxes */
+  --radius-overlay: 8px;      /* OverlayCornerRadius: cards, flyouts, dialogs, windows */
+  --radius-full:    9999px;   /* toggle switches, radio buttons, progress, badges */
+
+  --line-hair:  1px;
+  --line-focus: 2px;
+
+  /* Elevation: low, soft shadows; cards have none (a hairline is enough) */
+  --shadow-color-ambient: light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.24));
+  --shadow-color-key:     light-dark(rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.28));
+  --shadow-tooltip: 0 0 2px var(--shadow-color-ambient), 0 4px 8px var(--shadow-color-key);
+  --shadow-flyout:  0 0 2px var(--shadow-color-ambient), 0 8px 16px var(--shadow-color-key);
+  --shadow-dialog:  0 0 8px var(--shadow-color-ambient), 0 32px 64px var(--shadow-color-key);
+
+  /* Acrylic for flyouts, where the platform can blur (docs/07-theming.md: Materials) */
+  --acrylic-blur: 30px;
+  --acrylic-tint: light-dark(rgba(252, 252, 252, 0.85), rgba(44, 44, 44, 0.96));
+
+  /* ---------- 3d. Motion (docs/05-motion.md) ---------- */
+
+  --duration-faster: 83ms;    /* ControlFasterAnimationDuration: colour and opacity */
+  --duration-fast:   167ms;   /* ControlFastAnimationDuration: presses, small moves */
+  --duration-normal: 250ms;   /* ControlNormalAnimationDuration: toggles, expanders */
+  --duration-slow:   333ms;   /* page and dialog entrances */
+
+  --ease-decelerate: cubic-bezier(0, 0, 0, 1);         /* "fast out, slow in": entrances, most motion */
+  --ease-accelerate: cubic-bezier(1, 0, 1, 1);         /* "slow out, fast in": exits */
+  --ease-point:      cubic-bezier(0.55, 0.55, 0, 1);   /* point to point: things that move on screen */
+  --ease-standard:   var(--ease-decelerate);
+
+  --loop-progress: 2s;   /* indeterminate progress sweep */
+
+  /* ---------- 3e. Layering ---------- */
+
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-modal:    200;
+  --z-toast:    300;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"]  { color-scheme: dark; }
+
+/* Reduced motion (Windows: Settings > Accessibility > Visual effects > Animation effects). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-faster: 0ms;
+    --duration-fast:   0ms;
+    --duration-normal: 0ms;
+    --duration-slow:   0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
