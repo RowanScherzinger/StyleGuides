@@ -1,0 +1,316 @@
+/*
+ * Woodland design tokens: the single source of truth.
+ *
+ * Copy this file into an app and use var(--token) everywhere.
+ * Rules for each group live in docs/; reasons live in decisions/.
+ * Light by default: a sunlit clearing, moss on oat paper (decisions/0003).
+ * Dark variant: set data-theme="dark" on <html> for the forest at night (block at the end).
+ *
+ * Layers:
+ *   1. Palette   (--palette-*)  raw colours, never used directly in components
+ *   2. Semantic  (--color-*)    roles that components use
+ *   3. Scales    type, space, shape, shadow, motion, z-index
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- 1. Palette (docs/01-color.md) ---------- */
+
+  /* Oat: paper, the daylight field */
+  --palette-oat-50:  #f8f4eb;
+  --palette-oat-100: #f1ebdd;  /* light field, dark-variant body text */
+  --palette-oat-200: #e6dcc8;
+  --palette-oat-300: #d4c6ab;
+
+  /* Bark: ink, wood and soil */
+  --palette-bark-900: #2a2319;  /* light body text */
+  --palette-bark-800: #3a3024;
+  --palette-bark-700: #54473a;
+  --palette-bark-600: #665847;
+  --palette-bark-500: #8a7a66;
+  --palette-bark-300: #b8a990;
+
+  /* Moss: the identity */
+  --palette-moss-800: #33472a;
+  --palette-moss-700: #3f5a33;
+  --palette-moss-600: #4e6b3c;  /* the moss (light fills) */
+  --palette-moss-500: #6f8c58;
+  --palette-moss-400: #93ad7c;  /* the moss (dark fills) */
+  --palette-moss-300: #b9cca6;
+  --palette-moss-200: #dce6cf;
+
+  /* Pine: the night field and its grey-greens */
+  --palette-pine-950: #0f1712;
+  --palette-pine-900: #151f19;
+  --palette-pine-850: #1b2720;
+  --palette-pine-800: #223128;
+  --palette-pine-700: #2e4034;
+  --palette-pine-600: #405545;
+  --palette-pine-500: #5c705f;
+  --palette-pine-400: #8a9a8b;
+  --palette-pine-300: #b3c0b2;
+
+  /* Walnut: secondary, warm wood */
+  --palette-walnut-300: #c9a27c;
+  --palette-walnut-500: #8a6444;
+  --palette-walnut-ink: #7b5232;
+
+  /* Guests: status and charts. Each has a light tone (dark variant) and a deep ink (light variant). */
+  --palette-fern-300:   #8fcf97;  /* OK */
+  --palette-fern-ink:   #276b3a;
+  --palette-lake-300:   #8db8cf;  /* pending */
+  --palette-lake-ink:   #33688a;
+  --palette-lichen-300: #d9bb6a;  /* warning */
+  --palette-lichen-ink: #7a5d0c;
+  --palette-heather-300: #bba6cc; /* info */
+  --palette-heather-ink: #6c5288;
+
+  /* Rowan berry: danger only. A crimson red, kept away from walnut, lichen and every green. */
+  --palette-rowan-700: #a8152a;
+  --palette-rowan-400: #f05a63;
+  --palette-rowan-300: #ff8088;  /* danger text in the dark variant */
+
+  /* ---------- 2. Semantic colour (docs/01-color.md) ---------- */
+
+  --color-bg:          var(--palette-oat-100);
+  --color-bg-elevated: var(--palette-oat-50);
+  /* Dappled light: a moss glow top-left and warm sun top-right. Background only. */
+  --color-bg-haze:
+    radial-gradient(60rem 40rem at 0% 0%, rgba(111, 140, 88, 0.16), transparent 60%),
+    radial-gradient(50rem 36rem at 100% 0%, rgba(217, 187, 106, 0.16), transparent 60%);
+  /* Faint paper grain over the field. Background only, never on text. */
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.13 0 0 0 0 0.09 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* Linen cards */
+  --color-surface:        rgba(250, 247, 239, 0.80);
+  --color-surface-hover:  rgba(251, 249, 243, 0.92);
+  --color-surface-raised: rgba(251, 249, 243, 0.97);  /* menus, modals */
+  --color-surface-sunken: rgba(84, 71, 58, 0.06);     /* inputs, wells */
+  --glass-blur: 12px;
+
+  --color-border:        rgba(78, 107, 60, 0.18);
+  --color-border-strong: rgba(78, 107, 60, 0.45);
+  --color-divider:       rgba(42, 35, 25, 0.09);
+  --color-track:         rgba(78, 107, 60, 0.14);  /* empty part of rings, bars, toggles */
+  --color-series-muted:  rgba(84, 71, 58, 0.22);   /* bars that aren't the current one */
+  --color-knob:          var(--palette-bark-500);  /* toggle knob when off; on-accent when on */
+
+  --color-text:        var(--palette-bark-900);
+  --color-text-strong: #1f1a12;
+  --color-text-muted:  var(--palette-bark-700);
+  --color-text-dim:    var(--palette-bark-600);   /* non-essential text only */
+
+  /* Moss: primary actions, selection, links, the one thing per card that leads */
+  --color-accent:       var(--palette-moss-600);   /* fills, rings, glows */
+  --color-accent-text:  var(--palette-moss-700);   /* moss words, links and icons */
+  --color-accent-hover: var(--palette-moss-700);
+  --color-accent-soft:  rgba(111, 140, 88, 0.16);
+  --color-accent-soft-hover: rgba(111, 140, 88, 0.26);
+  --color-on-accent:    var(--palette-oat-50);     /* oat on moss in light; pine-black on moss in dark */
+
+  /* Big numbers */
+  --color-highlight:      var(--palette-moss-800);
+  --color-highlight-soft: rgba(42, 35, 25, 0.05);
+
+  /* Secondary: walnut. Secondary chips, the second chart series, progress fills. */
+  --color-secondary:      var(--palette-walnut-500);
+  --color-secondary-text: var(--palette-walnut-ink);
+  --color-secondary-soft: rgba(138, 100, 68, 0.14);
+
+  /* Status (docs/01-color.md: Status). Colour is never the only signal. */
+  --color-status-ok:      var(--palette-fern-ink);
+  --color-status-pending: var(--palette-lake-ink);
+  --color-status-idle:    var(--palette-bark-500);
+  --color-status-warning: var(--palette-lichen-ink);
+  --color-status-danger:  var(--palette-rowan-700);
+  --color-danger-text:    var(--palette-rowan-700);
+  --color-danger-fill:    rgba(168, 21, 42, 0.08);
+  --color-danger-border:  rgba(168, 21, 42, 0.45);
+  --color-info:           var(--palette-heather-ink);
+
+  --color-focus-ring: var(--palette-moss-700);
+  --color-selection:  rgba(111, 140, 88, 0.30);
+
+  /* ---------- 3a. Typography (docs/02-typography.md) ---------- */
+
+  --font-sans:    "Nunito Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-mono:    "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
+  /* Fraunces' soft axis rounds its serifs. Ignored by fallbacks. */
+  --font-display-settings: "SOFT" 100, "WONK" 0;
+
+  --text-xs:  0.75rem;    /* 12px: captions, chips */
+  --text-sm:  0.8125rem;  /* 13px: dense rows */
+  --text-md:  0.9375rem;  /* 15px: body */
+  --text-lg:  1.0625rem;  /* 17px */
+  --text-xl:  1.25rem;    /* 20px: card titles */
+  --text-2xl: 1.75rem;    /* 28px: page titles */
+  --text-3xl: 2.25rem;    /* 36px: stat values */
+  --text-4xl: 3rem;       /* 48px: hero number */
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --leading-tight:  1.2;
+  --leading-normal: 1.6;
+
+  --tracking-tight: -0.01em;  /* display sizes */
+  --tracking-none:  0;
+  --tracking-caps:  0.04em;   /* small sentence-case eyebrows */
+
+  /* ---------- 3b. Spacing (docs/03-spacing-layout.md) ---------- */
+
+  --space-0:  0;
+  --space-1:  0.25rem;  /* 4px */
+  --space-2:  0.5rem;   /* 8px */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+
+  /* ---------- 3c. Shape (docs/04-components.md) ---------- */
+
+  --radius-sm:   6px;    /* checkboxes, small chips inside cards */
+  --radius-md:   12px;   /* buttons, inputs, rows */
+  --radius-lg:   18px;   /* cards */
+  --radius-xl:   26px;   /* modals */
+  --radius-full: 9999px; /* chips, toggles, avatars, progress bars */
+  /* A river-stone outline: one hero card per screen at most */
+  --radius-pebble: 30px 24px 32px 22px / 24px 30px 22px 32px;
+
+  --line-hair: 1px;
+  --line-soft: 1.5px;
+  --line-bold: 2px;
+
+  /* Depth is a warm, low, blurry shadow, like light through leaves. Never a hard offset. */
+  --shadow-sm:    0 1px 4px rgba(58, 48, 36, 0.10);
+  --shadow-md:    0 6px 20px rgba(58, 48, 36, 0.10), 0 1px 2px rgba(58, 48, 36, 0.06);
+  --shadow-lg:    0 16px 44px rgba(58, 48, 36, 0.16);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);  /* top sheen on cards */
+  --glow-accent:  0 0 0 4px rgba(111, 140, 88, 0.20);
+  --glow-danger:  0 0 0 4px rgba(168, 21, 42, 0.12);
+
+  --text-glow: none;  /* hero number; dark variant only */
+
+  /* ---------- 3d. Motion (docs/05-motion.md) ---------- */
+
+  --duration-instant: 100ms;
+  --duration-fast:    180ms;
+  --duration-normal:  300ms;
+  --duration-slow:    520ms;
+
+  --stagger: 50ms;
+
+  --ease-natural: cubic-bezier(0.25, 0.8, 0.3, 1);  /* settles like a leaf landing: most things */
+  --ease-exit:    cubic-bezier(0.5, 0, 0.9, 0.5);
+  --ease-sway:    cubic-bezier(0.45, 0, 0.55, 1);   /* ambient loops */
+  --ease-standard: var(--ease-natural);
+
+  /* Ambient loops: slow, like wind */
+  --loop-sway:    5s;
+  --loop-breathe: 2.4s;
+  --loop-glow:    4s;
+
+  /* ---------- 3e. Layering ---------- */
+
+  --z-base:     0;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-modal:    200;
+  --z-toast:    300;
+}
+
+/* ---------- Dark variant (decisions/0003, docs/07-theming.md) ----------
+ * The same wood at night: a pine-black field, moss glass cards, oat text.
+ * Moss turns lighter, so the text on it turns dark. Status uses the light guest tones.
+ */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-bg:          var(--palette-pine-950);
+  --color-bg-elevated: var(--palette-pine-900);
+  --color-bg-haze:
+    radial-gradient(60rem 40rem at 0% 0%, rgba(147, 173, 124, 0.10), transparent 60%),
+    radial-gradient(50rem 36rem at 100% 100%, rgba(217, 187, 106, 0.06), transparent 60%);
+  --texture-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.92 0 0 0 0 0.86 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --color-surface:        rgba(34, 49, 40, 0.62);
+  --color-surface-hover:  rgba(41, 58, 47, 0.72);
+  --color-surface-raised: rgba(27, 39, 32, 0.95);
+  --color-surface-sunken: rgba(15, 23, 18, 0.55);
+  --glass-blur: 16px;
+
+  --color-border:        rgba(147, 173, 124, 0.16);
+  --color-border-strong: rgba(147, 173, 124, 0.40);
+  --color-divider:       rgba(241, 235, 221, 0.07);
+  --color-track:         var(--palette-pine-700);
+  --color-series-muted:  var(--palette-pine-600);
+  --color-knob:          var(--palette-pine-300);
+
+  --color-text:        var(--palette-oat-100);
+  --color-text-strong: var(--palette-oat-50);
+  --color-text-muted:  var(--palette-pine-300);
+  --color-text-dim:    var(--palette-pine-400);
+
+  --color-accent:       var(--palette-moss-400);
+  --color-accent-text:  var(--palette-moss-300);
+  --color-accent-hover: var(--palette-moss-300);
+  --color-accent-soft:  rgba(147, 173, 124, 0.14);
+  --color-accent-soft-hover: rgba(147, 173, 124, 0.22);
+  --color-on-accent:    var(--palette-pine-950);
+
+  --color-highlight:      var(--palette-oat-200);
+  --color-highlight-soft: rgba(230, 220, 200, 0.08);
+
+  --color-secondary:      var(--palette-walnut-300);
+  --color-secondary-text: var(--palette-walnut-300);
+  --color-secondary-soft: rgba(201, 162, 124, 0.14);
+
+  --color-status-ok:      var(--palette-fern-300);
+  --color-status-pending: var(--palette-lake-300);
+  --color-status-idle:    var(--palette-pine-400);
+  --color-status-warning: var(--palette-lichen-300);
+  --color-status-danger:  var(--palette-rowan-400);
+  --color-danger-text:    var(--palette-rowan-300);
+  --color-danger-fill:    rgba(168, 21, 42, 0.22);
+  --color-danger-border:  rgba(240, 90, 99, 0.55);
+  --color-info:           var(--palette-heather-300);
+
+  --color-focus-ring: var(--palette-moss-300);
+  --color-selection:  rgba(147, 173, 124, 0.30);
+
+  --shadow-sm:    0 2px 8px rgba(0, 0, 0, 0.30);
+  --shadow-md:    0 8px 24px rgba(0, 0, 0, 0.36);
+  --shadow-lg:    0 18px 48px rgba(0, 0, 0, 0.50);
+  --shadow-inset: inset 0 1px 0 rgba(241, 235, 221, 0.05);
+  --glow-accent:  0 0 0 4px rgba(147, 173, 124, 0.16), 0 6px 22px rgba(147, 173, 124, 0.16);
+  --glow-danger:  0 0 0 4px rgba(240, 90, 99, 0.16);
+  --text-glow:    0 0 18px rgba(147, 173, 124, 0.28);
+}
+
+/* Reduced motion: stop loops and collapse transitions everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast:    0ms;
+    --duration-normal:  0ms;
+    --duration-slow:    0ms;
+    --stagger:          0ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
