@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Win11 Preview</title>
+<link rel="stylesheet" href="../tokens/tokens.css">
+<link rel="stylesheet" href="../css/fluent.css">
+<style>
+  /* Preview-only layout. Components come from fluent.css. */
+  body { overflow-x: hidden; }
+  .titlebar { height: var(--titlebar-height); display: flex; align-items: center; gap: var(--space-3); padding: 0 var(--space-4); }
+  .titlebar .app-icon { width: 16px; height: 16px; border-radius: var(--radius-control); background: var(--color-accent); }
+  .titlebar .text-caption { font-family: var(--font-small); }
+  .titlebar .spacer { flex: 1; }
+  .seg { display: inline-flex; gap: var(--space-1); }
+  .seg .btn { min-width: 0; }
+  .seg .btn[aria-pressed="true"] { background: var(--color-accent); color: var(--color-on-accent); border-color: transparent; }
+
+  .frame { display: flex; min-height: calc(100vh - var(--titlebar-height)); }
+  nav.pane { width: var(--nav-pane-width); flex: none; padding: var(--space-1) 0; }
+  nav.pane .search { margin: var(--space-2) var(--space-4) var(--space-3); width: calc(100% - 2 * var(--space-4)); box-sizing: border-box; }
+  .icon { font-family: var(--font-icons); font-size: 16px; line-height: 1; width: 16px; text-align: center; font-style: normal; }
+  main.layer { flex: 1; min-width: 0; padding: var(--space-9) var(--space-14) var(--space-14); }
+  .content { max-width: 1000px; }
+  h1 { margin: 0 0 var(--space-6); }
+  h2 { margin: var(--space-8) 0 var(--space-2); }
+  .row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+  .grid2 { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+  .stack { display: flex; flex-direction: column; gap: var(--space-2); }
+  .card-icon { width: 20px; font-size: 20px; }
+  .chev { color: var(--color-text-muted); font-size: 12px; }
+  .ramp div { padding: var(--space-1) 0; }
+  .ramp .meta { color: var(--color-text-muted); font-size: var(--text-caption); font-family: var(--font-small); margin-left: var(--space-3); }
+  .infobar svg { flex: none; width: 16px; height: 16px; margin-top: 2px; }
+  .inline-dialog { position: relative; }
+  .inline-dialog .dialog { animation: none; box-shadow: var(--shadow-flyout); }
+  .tile-demo { display: flex; gap: var(--space-2); }
+  .tile { width: 96px; height: 72px; border-radius: var(--radius-overlay); border: var(--line-hair) solid var(--color-card-border); background: var(--color-surface); position: relative; overflow: hidden; }
+  .tile.is-selected { background: var(--color-accent-soft); outline: 2px solid var(--color-accent); outline-offset: -2px; }
+  .tile .chip { position: absolute; left: 6px; top: 6px; padding: 0 var(--space-2); border-radius: var(--radius-full); background: var(--color-scrim); font-size: var(--text-caption); line-height: 18px; font-family: var(--font-small); }
+  .photo { background: linear-gradient(135deg, #2f5d8a, #f0c27b); } /* stand-in for an image */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--space-2); }
+  .sw { border-radius: var(--radius-overlay); overflow: hidden; border: var(--line-hair) solid var(--color-card-border); font-size: var(--text-caption); line-height: var(--leading-caption); }
+  .sw i { display: block; height: 40px; border-bottom: var(--line-hair) solid var(--color-divider); }
+  .sw b { display: block; padding: var(--space-2); font-weight: var(--weight-regular); font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted); }
+  .bars { display: flex; height: 8px; gap: 2px; border-radius: var(--radius-control); overflow: hidden; }
+  .bars span { display: block; }
+  @media (max-width: 1007px) { nav.pane { width: var(--nav-pane-compact); } nav.pane .label, nav.pane .search { display: none; } main.layer { padding: var(--space-9); } }
+  @media (max-width: 639px) { nav.pane { display: none; } main.layer { padding: var(--space-4); border-radius: 0; } .titlebar .seg { display: none; } }
+</style>
+</head>
+<body class="win-root">
+
+<header class="titlebar">
+  <span class="app-icon" aria-hidden="true"></span>
+  <span class="text-caption">Win11 style guide</span>
+  <span class="spacer"></span>
+  <span class="seg" role="group" aria-label="Mode">
+    <button class="btn" data-mode="system" aria-pressed="true">System</button>
+    <button class="btn" data-mode="light" aria-pressed="false">Light</button>
+    <button class="btn" data-mode="dark" aria-pressed="false">Dark</button>
+  </span>
+  <span class="seg" role="group" aria-label="Accent">
+    <button class="btn" data-accent="blue" aria-pressed="true">Blue</button>
+    <button class="btn" data-accent="graphite" aria-pressed="false">Graphite</button>
+  </span>
+</header>
+
+<div class="frame">
+  <nav class="pane" aria-label="Sections">
+    <input class="input search" type="search" placeholder="Find a setting" aria-label="Find a setting">
+    <a class="nav-item is-selected" href="#type"><i class="icon" aria-hidden="true">&#xE80F;</i><span class="label">Home</span></a>
+    <a class="nav-item" href="#controls"><i class="icon" aria-hidden="true">&#xE8EA;</i><span class="label">Devices</span></a>
+    <a class="nav-item" href="#status"><i class="icon" aria-hidden="true">&#xE790;</i><span class="label">Personalization</span></a>
+    <a class="nav-item" href="#overlays"><i class="icon" aria-hidden="true">&#xE946;</i><span class="label">About</span></a>
+  </nav>
+
+  <main class="layer">
+    <div class="content">
+      <h1 class="text-title">Preview</h1>
+
+      <section id="type">
+        <h2 class="text-body-strong">Type ramp</h2>
+        <div class="card ramp">
+          <div class="text-display">68<span class="meta">Display</span></div>
+          <div class="text-title-large">Title large<span class="meta">40 / 52</span></div>
+          <div class="text-title">Title<span class="meta">28 / 36</span></div>
+          <div class="text-subtitle">Subtitle<span class="meta">20 / 28</span></div>
+          <div class="text-body-large">Body large<span class="meta">18 / 24</span></div>
+          <div class="text-body-strong">Body strong<span class="meta">14 / 20</span></div>
+          <div class="text-body">Body: the default for everything.<span class="meta">14 / 20</span></div>
+          <div class="text-caption">Caption: descriptions and hints.<span class="meta">12 / 16</span></div>
+          <div><span class="text-muted">Secondary text</span> · <span class="text-dim">Tertiary text (placeholders only)</span> · <a href="#type" style="color: var(--color-accent-text)">A link</a></div>
+        </div>
+      </section>
+
+      <section id="controls">
+        <h2 class="text-body-strong">Settings cards</h2>
+        <div class="card card--row">
+          <i class="icon card-icon" aria-hidden="true">&#xE8EA;</i>
+          <div class="card__text"><div>Open when a phone is connected</div><div class="card__desc">Starts the app when you plug in a phone with a cable</div></div>
+          <label class="choice"><span class="text-muted">On</span><input class="toggle" type="checkbox" checked aria-label="Open when a phone is connected"></label>
+        </div>
+        <div class="card card--row">
+          <i class="icon card-icon" aria-hidden="true">&#xE8B7;</i>
+          <div class="card__text"><div>Copy to</div><div class="card__desc">Pictures\Phone</div></div>
+          <button class="btn">Browse</button>
+        </div>
+        <div class="card card--row card--clickable" tabindex="0">
+          <i class="icon card-icon" aria-hidden="true">&#xE713;</i>
+          <div class="card__text"><div>Storage</div><div class="card__desc">Cache size, location</div></div>
+          <span class="icon chev" aria-hidden="true">&#xE76C;</span>
+        </div>
+
+        <h2 class="text-body-strong">Buttons and inputs</h2>
+        <div class="card stack">
+          <div class="row">
+            <button class="btn btn--accent">Copy 12 photos</button>
+            <button class="btn">Cancel</button>
+            <button class="btn btn--subtle"><i class="icon" aria-hidden="true">&#xE8C8;</i>Subtle</button>
+            <button class="btn btn--subtle btn--icon" aria-label="Delete" title="Delete"><i class="icon" aria-hidden="true">&#xE74D;</i></button>
+            <button class="btn" disabled>Disabled</button>
+            <button class="btn btn--accent" disabled>Disabled</button>
+            <button class="btn btn--danger">Delete from phone</button>
+          </div>
+          <div class="grid2">
+            <label class="field"><span>Folder name</span><input class="input" placeholder="For example, Holiday 2026"></label>
+            <div class="stack">
+              <label class="choice"><input class="check" type="checkbox" checked> Skip files already on this PC</label>
+              <label class="choice"><input class="check" type="checkbox"> Delete from the phone after copying</label>
+              <div class="row">
+                <label class="choice"><input class="radio" type="radio" name="size" checked> Small</label>
+                <label class="choice"><input class="radio" type="radio" name="size"> Medium</label>
+                <label class="choice"><input class="radio" type="radio" name="size"> Large</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="text-body-strong">List</h2>
+        <div class="card" style="padding: var(--space-1) 0">
+          <div class="list-item is-selected"><span style="flex:1">Everything</span><span class="text-muted">1,204</span></div>
+          <div class="list-item"><span style="flex:1">New since last time</span><span class="badge">12</span></div>
+          <div class="list-item"><span style="flex:1">On PC already</span><span class="text-muted">310</span></div>
+        </div>
+      </section>
+
+      <section id="status">
+        <h2 class="text-body-strong">Status</h2>
+        <div class="stack">
+          <div class="infobar"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="var(--color-info)"/><rect x="7.25" y="7" width="1.5" height="5" rx=".75" fill="var(--color-on-accent)"/><circle cx="8" cy="4.75" r="1" fill="var(--color-on-accent)"/></svg><div><span class="infobar__title">Update available</span>Version 1.2 is ready. It installs when you close the app.</div></div>
+          <div class="infobar infobar--ok"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="var(--color-status-ok)"/><path d="M4.75 8.25l2.1 2.1 4.4-4.6" stroke="var(--color-on-accent)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><span class="infobar__title">Copy complete</span>12 photos copied to Pictures\Phone.</div></div>
+          <div class="infobar infobar--warning"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.2L15.2 14.5H.8z" fill="var(--color-status-warning)" stroke="var(--color-status-warning)" stroke-linejoin="round"/><rect x="7.25" y="5.5" width="1.5" height="5" rx=".75" fill="var(--color-bg)"/><circle cx="8" cy="12.25" r="1" fill="var(--color-bg)"/></svg><div><span class="infobar__title">Phone is locked</span>Unlock it to see new photos.</div></div>
+          <div class="infobar infobar--danger"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="var(--color-status-danger)"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="var(--color-on-accent)" stroke-width="1.5" stroke-linecap="round"/></svg><div><span class="infobar__title">Couldn't copy 3 photos</span>The phone was disconnected. Connect it and try again.</div></div>
+        </div>
+        <div class="grid2" style="margin-top: var(--space-4)">
+          <div class="card stack">
+            <span class="status status--ok">Connected</span>
+            <span class="status status--pending">Scanning</span>
+            <span class="status status--idle">No device</span>
+            <span class="status status--warning">Locked</span>
+            <span class="status status--danger">Disconnected</span>
+            <span class="status status--info">New</span>
+          </div>
+          <div class="card stack">
+            <div class="text-caption text-muted">Copying 5 of 12</div>
+            <div class="progress"><span style="width: 42%"></span></div>
+            <div class="text-caption text-muted" style="margin-top: var(--space-2)">Looking for a phone</div>
+            <div class="progress progress--indeterminate"><span></span></div>
+            <div class="row" style="margin-top: var(--space-2)"><div class="progress-ring" aria-label="Working"></div><span class="badge">3</span><span class="badge badge--dot"></span><span class="badge badge--danger">!</span></div>
+            <div class="text-caption text-muted" style="margin-top: var(--space-2)">Phone storage: 96 of 128 GB</div>
+            <div class="bars"><span style="flex:48; background: var(--color-accent)"></span><span style="flex:30; background: var(--color-text-muted)"></span><span style="flex:18; background: var(--color-border-strong)"></span><span style="flex:32; background: var(--color-control)"></span></div>
+          </div>
+        </div>
+        <div class="tile-demo" style="margin-top: var(--space-4)">
+          <div class="tile photo"><span class="chip">Live</span></div>
+          <div class="tile photo is-selected"><span class="chip">0:42</span></div>
+          <div class="tile"></div>
+        </div>
+      </section>
+
+      <section id="overlays">
+        <h2 class="text-body-strong">Flyout, tooltip, dialog</h2>
+        <div class="grid2">
+          <div class="stack">
+            <div class="flyout flyout--acrylic" style="width: 240px">
+              <div class="menu-item"><i class="icon" aria-hidden="true">&#xE8C8;</i>Copy<span class="menu-item__key">Ctrl+C</span></div>
+              <div class="menu-item"><i class="icon" aria-hidden="true">&#xE8B7;</i>Show in folder</div>
+              <hr class="divider">
+              <div class="menu-item"><i class="icon" aria-hidden="true">&#xE74D;</i>Delete<span class="menu-item__key">Del</span></div>
+            </div>
+            <span class="tooltip">Copy the selected items to this PC</span>
+            <div><button class="btn btn--accent" id="open-dialog">Open a dialog</button></div>
+          </div>
+          <div class="inline-dialog">
+            <div class="dialog" role="presentation">
+              <div class="dialog__body">
+                <h3 class="dialog__title">Delete 12 photos?</h3>
+                <div>They'll be removed from the phone. Copies on this PC stay. You can't undo this.</div>
+              </div>
+              <div class="dialog__footer"><button class="btn btn--accent">Delete</button><button class="btn">Cancel</button></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="text-body-strong">Colour roles</h2>
+        <div class="swatches" id="swatches"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="dialog-smoke" id="smoke" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+    <div class="dialog__body">
+      <h3 class="dialog__title" id="dlg-title">Copy 12 photos?</h3>
+      <div>They'll go to Pictures\Phone. Files already there are skipped.</div>
+    </div>
+    <div class="dialog__footer"><button class="btn btn--accent" data-close>Copy</button><button class="btn" data-close>Cancel</button></div>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const press = (sel, btn) => document.querySelectorAll(sel).forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+
+  document.querySelectorAll("[data-mode]").forEach(btn => btn.addEventListener("click", () => {
+    if (btn.dataset.mode === "system") delete root.dataset.theme; else root.dataset.theme = btn.dataset.mode;
+    press("[data-mode]", btn);
+  }));
+
+  // Seven shades as Windows stores them (AccentPalette): Light3, Light2, Light1, Base, Dark1, Dark2, Dark3.
+  const accents = {
+    blue: null, // the defaults in tokens.css
+    graphite: ["#e6e5e1", "#a6a5a1", "#7c7a77", "#4c4a48", "#413f3d", "#272524", "#100d0d"],
+  };
+  const names = ["light-3", "light-2", "light-1", "base", "dark-1", "dark-2", "dark-3"];
+  document.querySelectorAll("[data-accent]").forEach(btn => btn.addEventListener("click", () => {
+    const shades = accents[btn.dataset.accent];
+    names.forEach((n, i) => shades ? root.style.setProperty(`--palette-accent-${n}`, shades[i]) : root.style.removeProperty(`--palette-accent-${n}`));
+    press("[data-accent]", btn);
+  }));
+
+  const smoke = document.getElementById("smoke");
+  document.getElementById("open-dialog").addEventListener("click", () => { smoke.hidden = false; smoke.querySelector(".btn--accent").focus(); });
+  smoke.addEventListener("click", e => { if (e.target === smoke || e.target.hasAttribute("data-close")) smoke.hidden = true; });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") smoke.hidden = true; });
+
+  const roles = ["bg", "bg-elevated", "layer", "surface", "surface-raised", "control", "border-strong", "divider",
+    "text", "text-muted", "text-dim", "accent", "accent-text", "on-accent",
+    "status-ok", "status-warning", "status-danger", "status-idle", "ok-fill", "warning-fill", "danger-fill", "focus-outer"];
+  document.getElementById("swatches").innerHTML = roles.map(r =>
+    `<div class="sw"><i style="background: var(--color-${r})"></i><b>--color-${r}</b></div>`).join("");
+</script>
+</body>
+</html>

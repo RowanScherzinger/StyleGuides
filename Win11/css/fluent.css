@@ -1,0 +1,428 @@
+/*
+ * Win11 shared primitives. Load after tokens/tokens.css.
+ * Rules: docs/04-components.md. Every value comes from a token.
+ */
+
+/* ---------- Base ---------- */
+
+.win-root {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.win-root ::selection { background: var(--color-accent); color: var(--color-on-accent); }
+
+/* The content layer: sits on the window background, rounded at its top-left where it meets
+   the navigation pane and title bar. */
+.layer {
+  background: var(--color-layer);
+  border: var(--line-hair) solid var(--color-card-border);
+  border-radius: var(--radius-overlay) 0 0 0;
+}
+
+/* ---------- Type ramp ---------- */
+
+.text-caption     { font-size: var(--text-caption);     line-height: var(--leading-caption); font-family: var(--font-small); }
+.text-body        { font-size: var(--text-body);        line-height: var(--leading-body); }
+.text-body-strong { font-size: var(--text-body);        line-height: var(--leading-body);        font-weight: var(--weight-semibold); }
+.text-body-large  { font-size: var(--text-body-large);  line-height: var(--leading-body-large); }
+.text-subtitle    { font-size: var(--text-subtitle);    line-height: var(--leading-subtitle);    font-weight: var(--weight-semibold); font-family: var(--font-display); }
+.text-title       { font-size: var(--text-title);       line-height: var(--leading-title);       font-weight: var(--weight-semibold); font-family: var(--font-display); }
+.text-title-large { font-size: var(--text-title-large); line-height: var(--leading-title-large); font-weight: var(--weight-semibold); font-family: var(--font-display); }
+.text-display     { font-size: var(--text-display);     line-height: var(--leading-display);     font-weight: var(--weight-semibold); font-family: var(--font-display); }
+.text-muted { color: var(--color-text-muted); }
+.text-dim   { color: var(--color-text-dim); }
+
+/* ---------- Focus ---------- */
+
+/* Keyboard focus only: a 2px outer ring with a 1px inner ring, outside the control. */
+.win-root :focus-visible {
+  outline: var(--line-focus) solid var(--color-focus-outer);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 1px var(--color-focus-inner);
+}
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--color-surface);
+  border: var(--line-hair) solid var(--color-card-border);
+  border-radius: var(--radius-overlay);
+  padding: var(--space-4);
+}
+
+.card + .card { margin-top: var(--space-1); }
+
+/* A settings-style row: icon, title and description, control on the right. */
+.card--row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 68px;
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-4);
+}
+.card--row .card__text { flex: 1; min-width: 0; }
+.card--row .card__desc { font-size: var(--text-caption); line-height: var(--leading-caption); color: var(--color-text-muted); }
+
+.card--clickable { cursor: pointer; transition: background var(--duration-faster) linear; }
+.card--clickable:hover { background: var(--color-surface-hover); }
+.card--clickable:active { background: var(--color-surface-hover); color: var(--color-text-muted); }
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 120px;
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-control);
+  border: var(--line-hair) solid var(--color-border);
+  border-bottom-color: var(--color-border-secondary);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: background var(--duration-faster) linear, color var(--duration-faster) linear;
+}
+.btn:hover  { background: var(--color-control-hover); }
+.btn:active { background: var(--color-control-pressed); color: var(--color-text-muted); border-bottom-color: var(--color-border); }
+.btn:disabled { background: var(--color-control-disabled); color: var(--color-text-disabled); border-color: var(--color-border); cursor: default; }
+
+.btn--accent {
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border-color: transparent;
+}
+.btn--accent:hover  { background: var(--color-accent-hover); }
+.btn--accent:active { background: var(--color-accent-pressed); color: var(--color-on-accent-muted); border-color: transparent; }
+.btn--accent:disabled { background: var(--color-accent-disabled); color: var(--color-on-accent); border-color: transparent; }
+
+.btn--subtle { background: transparent; border-color: transparent; min-width: 0; }
+.btn--subtle:hover  { background: var(--color-subtle-hover); }
+.btn--subtle:active { background: var(--color-subtle-pressed); }
+
+.btn--icon { min-width: 0; width: var(--control-height); padding: 0; }
+
+/* (Proposed) Destructive actions outside a confirming dialog. */
+.btn--danger {
+  color: var(--color-danger-text);
+  background: var(--color-danger-fill);
+  border-color: var(--color-danger-border);
+}
+.btn--danger:hover  { background: var(--color-danger-fill); border-color: var(--color-status-danger); }
+
+/* ---------- Text box ---------- */
+
+.input {
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-control);
+  border: var(--line-hair) solid var(--color-border);
+  border-bottom-color: var(--color-border-strong);
+  border-radius: var(--radius-control);
+  outline: none;
+}
+.input::placeholder { color: var(--color-text-dim); }
+.input:hover { background: var(--color-control-hover); }
+/* Focus: solid fill and a 2px accent underline, drawn inside so the box doesn't move. */
+.input:focus,
+.input:focus-visible {
+  background: var(--color-input-active);
+  border-bottom-color: var(--color-accent);
+  box-shadow: inset 0 -1px 0 var(--color-accent);
+  outline: none;
+}
+
+.field { display: flex; flex-direction: column; gap: var(--space-2); }
+.field > span { color: var(--color-text); }
+
+/* ---------- Check box, radio, toggle ---------- */
+
+.check, .radio {
+  appearance: none;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  display: inline-grid;
+  place-content: center;
+  background: var(--color-control-hover);
+  border: var(--line-hair) solid var(--color-border-strong);
+  cursor: pointer;
+  transition: background var(--duration-faster) linear;
+}
+.check { border-radius: var(--radius-control); }
+.radio { border-radius: var(--radius-full); }
+.check:checked { background: var(--color-accent); border-color: var(--color-accent); }
+.check:checked::after {
+  content: "";
+  width: 10px;
+  height: 5px;
+  margin-top: -3px;
+  border-left: 1.5px solid var(--color-on-accent);
+  border-bottom: 1.5px solid var(--color-on-accent);
+  transform: rotate(-45deg);
+}
+.radio:checked { background: var(--color-accent); border-color: var(--color-accent); }
+.radio:checked::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-on-accent);
+}
+
+.toggle {
+  appearance: none;
+  flex: none;
+  position: relative;
+  width: 40px;
+  height: 20px;
+  margin: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-control);
+  border: var(--line-hair) solid var(--color-border-strong);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-decelerate);
+}
+.toggle::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-control-strong);
+  transition: transform var(--duration-normal) var(--ease-point), width var(--duration-fast) var(--ease-decelerate);
+}
+.toggle:hover::after { width: 14px; height: 14px; top: 2px; left: 2px; }
+.toggle:checked { background: var(--color-accent); border-color: var(--color-accent); }
+.toggle:checked::after { background: var(--color-on-accent); transform: translateX(20px); }
+
+.choice { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--control-height); cursor: pointer; }
+
+/* ---------- Lists and navigation ---------- */
+
+/* Selected rows get a subtle fill and a short accent pill on the left edge. */
+.list-item, .nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-3);
+  margin: 2px var(--space-1);
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duration-faster) linear;
+}
+.list-item { min-height: var(--list-item-height); }
+.nav-item  { min-height: var(--nav-item-height); }
+.list-item:hover, .nav-item:hover { background: var(--color-subtle-hover); }
+.list-item:active, .nav-item:active { background: var(--color-subtle-pressed); color: var(--color-text-muted); }
+.list-item.is-selected, .nav-item.is-selected { background: var(--color-subtle-hover); }
+.list-item.is-selected::before, .nav-item.is-selected::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 16px;
+  margin-top: -8px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+}
+
+.divider { height: var(--line-hair); background: var(--color-divider); border: 0; margin: var(--space-2) 0; }
+
+/* ---------- InfoBar ---------- */
+
+.infobar {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: var(--line-hair) solid var(--color-card-border);
+  border-radius: var(--radius-control);
+  background: var(--color-info-fill);
+}
+.infobar__title { font-weight: var(--weight-semibold); margin-right: var(--space-3); }
+.infobar--ok      { background: var(--color-ok-fill); }
+.infobar--warning { background: var(--color-warning-fill); }
+.infobar--danger  { background: var(--color-danger-fill); }
+
+/* ---------- Progress ---------- */
+
+/* A 1px track with a 3px rounded bar on top. */
+.progress {
+  position: relative;
+  height: 3px;
+  display: flex;
+  align-items: center;
+}
+.progress::before {
+  content: "";
+  position: absolute;
+  inset: 1px 0;
+  background: var(--color-border-strong);
+  border-radius: var(--radius-full);
+}
+.progress > span {
+  position: relative;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  transition: width var(--duration-normal) var(--ease-decelerate);
+}
+.progress--indeterminate { overflow: hidden; }
+.progress--indeterminate > span { width: 40%; animation: win-progress var(--loop-progress) var(--ease-point) infinite; }
+@keyframes win-progress { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+
+.progress-ring {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  border: 3px solid transparent;
+  border-top-color: var(--color-accent);
+  animation: win-spin var(--loop-progress) linear infinite;
+}
+@keyframes win-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Badges ---------- */
+
+.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;  /* 11px: InfoBadge text, the one size off the ramp */
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+}
+.badge--danger { background: var(--color-status-danger); color: var(--color-on-accent); }
+.badge--dot { min-width: 6px; width: 6px; height: 6px; padding: 0; }
+
+/* ---------- Flyouts, menus, tooltips ---------- */
+
+.flyout {
+  background: var(--color-surface-raised);
+  border: var(--line-hair) solid var(--color-flyout-border);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-flyout);
+  padding: var(--space-1) 0;
+  animation: win-flyout-in var(--duration-normal) var(--ease-decelerate);
+}
+@supports (backdrop-filter: blur(1px)) {
+  .flyout--acrylic { background: var(--acrylic-tint); backdrop-filter: blur(var(--acrylic-blur)) saturate(1.25); }
+}
+@keyframes win-flyout-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--control-height);
+  padding: 0 var(--space-3);
+  margin: 2px var(--space-1);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+.menu-item:hover { background: var(--color-subtle-hover); }
+.menu-item__key { margin-left: auto; padding-left: var(--space-6); font-size: var(--text-caption); color: var(--color-text-muted); }
+
+.tooltip {
+  display: inline-block;
+  width: max-content;
+  max-width: 320px;
+  padding: 6px var(--space-2) var(--space-2);
+  font-size: var(--text-caption);
+  line-height: var(--leading-caption);
+  background: var(--color-surface-raised);
+  border: var(--line-hair) solid var(--color-flyout-border);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-tooltip);
+}
+
+/* ---------- Dialog ---------- */
+
+.dialog-smoke { position: fixed; inset: 0; background: var(--color-smoke); z-index: var(--z-modal); display: grid; place-items: center; }
+.dialog-smoke[hidden] { display: none; }
+
+.dialog {
+  width: min(548px, calc(100vw - 2 * var(--space-4)));
+  min-width: min(320px, 100%);
+  background: var(--color-dialog);
+  border: var(--line-hair) solid var(--color-flyout-border);
+  border-radius: var(--radius-overlay);
+  box-shadow: var(--shadow-dialog);
+  overflow: hidden;
+  animation: win-dialog-in var(--duration-normal) var(--ease-decelerate);
+}
+.dialog__body { padding: var(--space-6); }
+.dialog__title { margin: 0 0 var(--space-3); font-family: var(--font-display); font-size: var(--text-subtitle); line-height: var(--leading-subtitle); font-weight: var(--weight-semibold); }
+.dialog__footer {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  background: var(--color-dialog-footer);
+  border-top: var(--line-hair) solid var(--color-card-border);
+}
+.dialog__footer > .btn { flex: 1; }
+@keyframes win-dialog-in { from { opacity: 0; transform: scale(1.05); } to { opacity: 1; transform: none; } }
+
+/* ---------- Status glyphs (docs/06-iconography.md) ---------- */
+
+.status { display: inline-flex; align-items: center; gap: var(--space-2); }
+.status::before {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  box-sizing: border-box;
+}
+.status--ok::before      { background: var(--color-status-ok); }
+.status--pending::before { border: 1.5px solid var(--color-status-pending); background: linear-gradient(90deg, var(--color-status-pending) 50%, transparent 50%); }
+.status--idle::before    { border: 1.5px solid var(--color-status-idle); }
+.status--info::before    { width: 7px; height: 7px; margin: 0 1.5px; background: var(--color-info); }
+.status--warning::before {
+  border-radius: 1px;
+  background: var(--color-status-warning);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.status--danger::before {
+  border: 1.5px solid var(--color-status-danger);
+  background:
+    linear-gradient(45deg, transparent 43%, var(--color-status-danger) 43% 57%, transparent 57%),
+    linear-gradient(-45deg, transparent 43%, var(--color-status-danger) 43% 57%, transparent 57%);
+  background-size: 60% 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ---------- High contrast ---------- */
+
+/* Windows contrast themes: let the system colours through and keep every edge visible. */
+@media (forced-colors: active) {
+  .card, .btn, .input, .flyout, .dialog, .infobar, .toggle, .check, .radio { border-color: CanvasText; }
+  .btn--accent, .check:checked, .radio:checked, .toggle:checked { background: Highlight; color: HighlightText; border-color: Highlight; }
+  .list-item.is-selected::before, .nav-item.is-selected::before, .progress > span { background: Highlight; }
+  .status::before { forced-color-adjust: none; }
+}
