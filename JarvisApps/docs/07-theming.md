@@ -8,9 +8,17 @@ native scrollbars, inputs and date pickers render dark.
 
 ## The background
 
-- App background: `--color-bg`. Optionally use `.hud-grid-bg` (a faint 24px grid plus a
-  warm vignette at the top) on dashboard-style screens.
+- Every app's page background is `.hud-grid-bg`: `--color-bg` with a faint 24px grid and
+  a warm copper vignette at the top (decisions/0012). Put it on `<body>`, next to `.hud-root`.
+  It's the staple backdrop of the family, on every screen, including text-heavy ones.
+- The grid stays put while the page scrolls (`background-attachment: fixed`), so panels
+  move over it like a HUD over a fixed field, and the vignette stays at the top of the view.
+- Exception: Desktop-Widgets has no page background (it floats over the wallpaper), so no grid.
 - Never use flat `#000`. The warm black (`#060404`) is the base.
+
+```html
+<body class="hud-root hud-grid-bg">
+```
 
 ## Glass over the app (Jarvis, Larder, Plox)
 
@@ -34,6 +42,35 @@ The widgets float over an unknown wallpaper, and that changes two things:
    - Copper and danger text on the overlay: large or bold only.
    - `--color-text-dim` is not allowed on the overlay.
    - Bare text with no panel needs `text-shadow: 0 0 3px #000, 0 0 8px #000`.
+
+## Native Windows apps (iPhone Explorer)
+
+Native apps can't read `tokens.css`. Mirror it in a single theme file instead (decisions/0008):
+
+- Name each member after its token, and put the path to `tokens.css` and the copy date in the
+  file header. Re-copy the values by hand when the tokens change.
+- Never use a colour, font, size or duration literal outside that file.
+- Glass is tint only, with no blur. Blend translucent tokens over `--color-bg` before using them
+  as a native control background *(Proposed)*.
+- Use `Application.SetColorMode(Dark)` for native chrome, and replace message boxes with a modal
+  in the guide's style *(Proposed)*.
+- The Windows "Animation effects" setting stands in for reduced motion *(Proposed)*.
+
+## Home Assistant
+
+HA is themed through its own theme YAML, not by copying `tokens.css` (decisions/0010):
+
+- The theme copies every token as a theme variable, so card CSS can use `var(--color-*)`.
+  It is generated from `tokens.css`. Re-run the build when the tokens change.
+- The theme has a dark mode only, so HA can't switch to light.
+- Entity state: active ("light on", "switch on") is **gold**, a live value. Inactive is idle
+  silver. Chartreuse is only the small OK / running status light. Never use it for active
+  state fills or icons.
+- HA's named colours (`--amber-color`, `--purple-color`...) are remapped into the warm range
+  *(Proposed)*. Cool names map to arc blue or chartreuse, so they stay small marks.
+- Glass, corner brackets and HUD headings come from card-mod. Readout tiles, status lights and
+  ring gauges come from button-card templates *(Proposed)*.
+- Fonts are self-hosted from HA's `www/` folder and loaded on every page.
 
 ## Per-app character
 

@@ -78,3 +78,5 @@ Measured against WCAG with the glass composited (`python tools/contrast.py`):
 - Gradients are allowed only for light effects: scan sweeps, vignettes, fading a line into
   the background. Never on text or buttons.
 - Text on a solid copper or gold fill uses `--color-on-accent` (black).
+- Money amounts are plain text. Colour only the sign: `+` in `--color-status-ok` for money
+  in, `-` in `--color-danger-text` for money out (decisions/0011).

@@ -17,6 +17,9 @@ Open `examples/preview.html` in a browser to see it.
 | Larder | React + Vite | Grocery / recipes / meal planner |
 | Desktop-Widgets | Electron, React | Transparent desktop overlay. The reference implementation of this look. |
 | Plox | Vanilla JS | Media viewer |
+| Home Assistant | HA theme YAML, card-mod, button-card | Home automation dashboards. The theme is generated from `tokens.css` (decisions/0010). |
+| iPhone Explorer | C# WinForms (.NET 10) | Native Windows app: browse and copy iPhone photos. Mirrors the tokens in `Hud/Theme.cs` (decisions/0008). |
+| ProjectMoney | React + Vite | Personal finance tracker. Sidebar + content. Signed amounts per decisions/0011. |
 
 ## Layout
 
@@ -61,7 +64,7 @@ Copy both CSS files into the app, and re-copy them when the guide changes.
 
 ## Status
 
-The direction is decided (decisions 0002, 0003 and 0007). Everything more specific in `docs/`
+The direction is decided (decisions 0002, 0003 and 0007), as are the accepted parts of 0008 and 0010. Everything more specific in `docs/`
 is **proposed** and waiting for confirmation: decisions 0004–0006, the *(Proposed)* labels,
 and the component, layout and data-viz details. Remaining open questions are listed at the
 end of each doc.

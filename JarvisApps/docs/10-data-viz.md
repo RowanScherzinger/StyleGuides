@@ -28,5 +28,7 @@ Red is never a data series. It means critical only.
 
 - Draw charts on with `draw-line` the first time they render. Later updates go straight to the new value.
 - Tooltips are small glass panels with a crosshair at the point. Values are tabular mono.
-- No 3D, no pie charts. Use a ring or a segmented bar instead.
+- No 3D, no pie charts. Use a ring or a segmented bar instead. A share-of-total
+  breakdown is a thin multi-segment ring: about 6px thick, 2° gaps, no stroke (decisions/0011).
+- Income and spending are ordinary series (gold, copper), never green and red (decisions/0011).
 - Axis and tick text uses `--color-text-dim` on app surfaces only.

@@ -13,5 +13,8 @@ browser or Electron, so CSS variables work in all of them directly. A JSON sourc
 a generator would only pay off if a non-web consumer appeared (for example the Unity
 game); revisit then.
 
+Update 2026-10-17: a non-web consumer has appeared (iPhone Explorer, WinForms). It mirrors the
+tokens by hand rather than adding a generator. See 0008.
+
 ## Affects
 `tokens/tokens.css`, `README.md`.
