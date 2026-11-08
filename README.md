@@ -28,9 +28,23 @@ Each guide follows the same shape:
   docs/         one file per topic (colour, type, layout, components...)
   decisions/    one file per decision, with the reason
   examples/     a preview page that renders the guide
-  tools/        checks, e.g. contrast
+  tools/        checks, e.g. contrast (token values only, see below)
 ```
+
+Shared code for the checks lives in the root `tools/` folder, not in each guide:
+
+```
+tools/
+  wcag.py       WCAG contrast maths (hex, compositing, luminance, ratio, hue gap) and table printing
+```
+
+A guide's `tools/contrast.py` holds that guide's token values and imports the helpers from
+`tools/wcag.py` by a path relative to itself, so it runs from any folder. If you copy a guide
+out of this repo, copy `tools/wcag.py` with it.
 
 ## Adding a guide
 
-Make a new top-level folder with the same layout, and add a row to the table above.
+Make a new top-level folder with the same layout, and add a row to the table above. Its
+`tools/contrast.py` imports from `tools/wcag.py` rather than copying the helpers (copy the
+first lines of an existing guide's script). Add a helper to `wcag.py` only when more than one
+guide needs it, and check that every guide's script still gives the same output.

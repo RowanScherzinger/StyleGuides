@@ -6,25 +6,10 @@ Pass an accent palette to check a different system accent, for example:
     python tools/contrast.py 99ebff 60cdff 0093f9 0078d4 005fb8 003e92 001968
 """
 import sys
+from pathlib import Path
 
-def hex_rgb(h):
-    h = h.lstrip("#")
-    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
-
-def over(fg_rgba, bg_rgb):
-    r, g, b, a = fg_rgba
-    return tuple(round(c * a + d * (1 - a)) for c, d in zip((r, g, b), bg_rgb))
-
-def lum(rgb):
-    def ch(c):
-        c /= 255
-        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
-    r, g, b = (ch(c) for c in rgb)
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
-
-def ratio(a, b):
-    la, lb = sorted((lum(a), lum(b)), reverse=True)
-    return (la + 0.05) / (lb + 0.05)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+from wcag import hex_rgb, over, ratio, table  # noqa: E402  shared helpers in <repo>/tools/wcag.py
 
 # Light3, Light2, Light1, Base, Dark1, Dark2, Dark3 (the default Windows blue)
 ACCENT = [hex_rgb(h) for h in (sys.argv[1:8] if len(sys.argv) >= 8 else
@@ -45,23 +30,16 @@ def mode(name, bg, layer, card, raised, dialog, texts, statuses, fills, accent, 
         "dialog": dialog,
     }
     print(f"\n{name}")
-    print(f"{'':20}" + "".join(f"{s:>10}" for s in surfaces))
     rows = dict(texts)
     rows["accent text"] = accent_text
     rows["accent fill"] = accent
     for label, colour in statuses.items():
         rows[label] = colour
-    for tn, t in rows.items():
-        cells = []
-        for s in surfaces.values():
-            c = over(t, s) if len(t) == 4 else t
-            cells.append(f"{ratio(c, s):>10.2f}")
-        print(f"{tn:20}" + "".join(cells))
+    table(surfaces, rows, label_w=20, col_w=10)
     print(f"  on-accent on accent fill        {ratio(on_accent, accent):6.2f}")
     for label, (fill, text) in fills.items():
         print(f"  {label:32}{ratio(text, fill):6.2f}")
-    t = texts["text"]
-    t = over(t, smoke_on) if len(t) == 4 else t
+    t = over(texts["text"], smoke_on)
     print(f"  text on scrim, worst photo      {ratio(t, smoke_on):6.2f}")
 
 # ---------- Light ----------

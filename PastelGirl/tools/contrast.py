@@ -2,30 +2,11 @@
 
 Keep the values here in sync with tokens/tokens.css. Run: python tools/contrast.py
 """
-import colorsys
+import sys
+from pathlib import Path
 
-def hex_rgb(h):
-    h = h.lstrip("#")
-    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
-
-def over(fg_rgba, bg_rgb):
-    r, g, b, a = fg_rgba
-    return tuple(round(c * a + d * (1 - a)) for c, d in zip((r, g, b), bg_rgb))
-
-def lum(rgb):
-    def ch(c):
-        c /= 255
-        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
-    r, g, b = (ch(c) for c in rgb)
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
-
-def ratio(a, b):
-    la, lb = sorted((lum(a), lum(b)), reverse=True)
-    return (la + 0.05) / (lb + 0.05)
-
-def hls(rgb):
-    h, l, s = colorsys.rgb_to_hls(*(c / 255 for c in rgb))
-    return h * 360, l, s
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+from wcag import hex_rgb, over, ratio, hls, table  # noqa: E402  shared helpers in <repo>/tools/wcag.py
 
 BG = hex_rgb("#120b12")
 SURFACE = over((44, 31, 47, 0.62), BG)
@@ -61,10 +42,7 @@ texts = {
     "silver-500": hex_rgb("#b9b4c2"),
 }
 
-print(f"{'':16}" + "".join(f"{s:>18}" for s in surfaces))
-for tn, t in texts.items():
-    row = "".join(f"{ratio(t, s):>18.2f}" for s in surfaces.values())
-    print(f"{tn:16}{row}")
+table(surfaces, texts, label_w=16)
 
 print()
 print("Dark text on pastel fills (--color-on-accent):")
@@ -113,8 +91,5 @@ l_texts = {
     "pink-500 fill": hex_rgb("#f5a3c3"),
 }
 
-print(f"{'':16}" + "".join(f"{s:>18}" for s in l_surfaces))
-for tn, t in l_texts.items():
-    row = "".join(f"{ratio(t, s):>18.2f}" for s in l_surfaces.values())
-    print(f"{tn:16}{row}")
+table(l_surfaces, l_texts, label_w=16)
 print(f"  text on pink-500 fill: {ratio(l_texts['text #2a1a2c'], l_texts['pink-500 fill']):.2f}")

@@ -27,6 +27,7 @@ examples/
   preview.html     a live sample of the tokens and components
 tools/
   contrast.py      WCAG contrast check for both modes, for the default or any accent palette
+                   (uses the shared helpers in the repo's root tools/wcag.py)
 docs/
   00-principles.md       the feel, do/don't, references
   01-color.md            accent palette, roles, status, measured contrast

@@ -7,27 +7,10 @@ to check a different system accent, for example purple:
     python tools/contrast.py cb30e0 db34f2 b02fc2 ea8dff
 """
 import sys
+from pathlib import Path
 
-def hex_rgb(h):
-    h = h.lstrip("#")
-    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
-
-def over(fg, bg):
-    if len(fg) == 3:
-        return fg
-    r, g, b, a = fg
-    return tuple(round(c * a + d * (1 - a)) for c, d in zip((r, g, b), bg))
-
-def lum(rgb):
-    def ch(c):
-        c /= 255
-        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
-    r, g, b = (ch(c) for c in rgb)
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
-
-def ratio(a, b):
-    la, lb = sorted((lum(a), lum(b)), reverse=True)
-    return (la + 0.05) / (lb + 0.05)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+from wcag import hex_rgb, over, ratio, table  # noqa: E402  shared helpers in <repo>/tools/wcag.py
 
 W = (255, 255, 255)
 
@@ -45,11 +28,9 @@ ACCENT = sys.argv[1:5] if len(sys.argv) >= 5 else SYSTEM["blue"]
 A_L, A_D, A_IC_L, A_IC_D = (hex_rgb(h) for h in ACCENT)
 S = {k: [hex_rgb(h) for h in v] for k, v in SYSTEM.items()}
 
-def table(name, surfaces, rows, pairs):
+def report(name, surfaces, rows, pairs):
     print(f"\n{name}")
-    print(f"{'':26}" + "".join(f"{s:>9}" for s in surfaces))
-    for label, colour in rows.items():
-        print(f"{label:26}" + "".join(f"{ratio(over(colour, s), s):>9.2f}" for s in surfaces.values()))
+    table(surfaces, rows, label_w=26, col_w=9)
     for label, (fg, bg) in pairs.items():
         print(f"  {label:34}{ratio(fg, bg):6.2f}")
 
@@ -78,7 +59,7 @@ def light(ic):
         "red text on push button": (S["red"][2], W),
         "white chip on scrim, white photo": (W, over((0, 0, 0, SCRIM), W)),
     }
-    table("LIGHT" + (" + Increase Contrast" if ic else ""), surfaces, rows, pairs)
+    report("LIGHT" + (" + Increase Contrast" if ic else ""), surfaces, rows, pairs)
 
 def dark(ic):
     bg = hex_rgb("#323232")
@@ -107,7 +88,7 @@ def dark(ic):
     }
     if ic:
         pairs["(white on IC accent, not used)"] = (W, A_IC_D)
-    table("DARK" + (" + Increase Contrast" if ic else ""), surfaces, rows, pairs)
+    report("DARK" + (" + Increase Contrast" if ic else ""), surfaces, rows, pairs)
 
 light(False)
 dark(False)

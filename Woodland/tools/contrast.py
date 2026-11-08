@@ -2,44 +2,11 @@
 
 Keep the values here in sync with tokens/tokens.css. Run: python tools/contrast.py
 """
-import colorsys
+import sys
+from pathlib import Path
 
-def hex_rgb(h):
-    h = h.lstrip("#")
-    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
-
-def over(fg_rgba, bg_rgb):
-    r, g, b, a = fg_rgba
-    return tuple(round(c * a + d * (1 - a)) for c, d in zip((r, g, b), bg_rgb))
-
-def lum(rgb):
-    def ch(c):
-        c /= 255
-        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
-    r, g, b = (ch(c) for c in rgb)
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
-
-def ratio(a, b):
-    la, lb = sorted((lum(a), lum(b)), reverse=True)
-    return (la + 0.05) / (lb + 0.05)
-
-def hls(rgb):
-    h, l, s = colorsys.rgb_to_hls(*(c / 255 for c in rgb))
-    return h * 360, l, s
-
-def hue_gap(a, b):
-    d = abs(hls(a)[0] - hls(b)[0]) % 360
-    return min(d, 360 - d)
-
-def table(surfaces, texts):
-    print(f"{'':18}" + "".join(f"{s:>18}" for s in surfaces))
-    for tn, t in texts.items():
-        row = "".join(f"{ratio(t, s):>18.2f}" for s in surfaces.values())
-        print(f"{tn:18}{row}")
-
-def separation(pairs):
-    for (an, a), (bn, b) in pairs:
-        print(f"  {an:>14} vs {bn:<14} hue gap {hue_gap(a, b):5.0f}  luminance ratio {ratio(a, b):.2f}")
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+from wcag import hex_rgb, over, ratio, table, separation  # noqa: E402  shared helpers in <repo>/tools/wcag.py
 
 # ---------- Light (default, :root) ----------
 print("LIGHT (default)")

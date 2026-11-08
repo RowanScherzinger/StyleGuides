@@ -23,6 +23,7 @@ examples/
   preview.html     a live sample of the tokens and components
 tools/
   contrast.py      WCAG contrast check for both variants, plus hue separation of the status colours
+                   (uses the shared helpers in the repo's root tools/wcag.py)
 docs/
   00-principles.md       the feel, do/don't
   01-color.md            palette, roles, status, measured contrast
