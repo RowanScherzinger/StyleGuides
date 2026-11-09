@@ -54,6 +54,8 @@ Desktop-Widgets' current 6–10px button radii should come down to these.
 
 Mono text, `rgba(255,255,255,0.04)` fill, copper hairline that strengthens on focus,
 gold focus ring. Toggles are rectangular tracks with a square thumb, not pills *(Proposed)*.
+Selects are the same input, 24px tall, with the value in gold tabular mono and a small copper
+chevron on the right. Their label sits beside them in the toggle's label style *(Proposed)*.
 
 ## Readouts and stat tiles
 
