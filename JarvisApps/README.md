@@ -46,7 +46,7 @@ docs/
   07-theming.md          dark only, glass in apps vs over the desktop
   08-accessibility.md    contrast, focus, keyboard, reduced motion
   09-voice-and-copy.md   labels, buttons, numbers, messages
-  10-data-viz.md         readouts, ring gauges, segmented bars, sparklines
+  10-data-viz.md         readouts, ring gauges, segmented bars, sparklines, channel traces
 decisions/
   NNNN-*.md        one file per decision, with the reason (accepted / proposed)
 ```

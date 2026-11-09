@@ -33,5 +33,5 @@ This repo is a style guide, not an app. There is nothing to build, run or test.
    (OK status) and arc blue (info, high-contrast marks) are only for small accents
    (decisions/0007). Red is only for danger (proposed, decisions/0004).
 
-Only decisions 0002, 0003, 0007, 0011, 0012 and the accepted parts of 0008 and 0010 are the user's own. Everything else in `docs/` is
+Only decisions 0002, 0003, 0007, 0011, 0012 and the accepted parts of 0008, 0010 and 0013 are the user's own. Everything else in `docs/` is
 proposed until the user confirms it, so follow it, but raise anything that seems wrong.

@@ -7,11 +7,18 @@ instruments: thin lines, ticks, arcs and minimal chrome.
 
 | Use | Order / tokens |
 |---|---|
-| Categorical series | 1 gold, 2 copper, 3 silver, 4 off-white, 5 pale copper (`--palette-copper-300`). More than five series means the chart should be split. |
+| Categorical series | 1 `--color-series-1` (gold-400), 2 `--color-series-2` (copper), 3 silver, 4 off-white, 5 pale copper (`--palette-copper-300`). More than five series means the chart should be split. |
 | Sequential (low to high) | `--palette-neutral-700` → copper → gold → `--palette-gold-300` |
-| Thresholds | Normal: series colour. Warning: ember. Critical: crimson. Draw threshold lines as dashed hairlines. |
+| Thresholds | Normal: series colour. Warning: ember. Critical: crimson. Draw threshold lines as dashed hairlines. A single-series line may turn ember or crimson where it crosses a threshold. On a multi-series chart the lines keep their series colours, and the dashed lines and status tags show the threshold. |
+| Gridlines | `--color-chart-grid` (off-white at 4%) |
 
 Red is never a data series. It means critical only.
+
+Series 1 is gold-400, not the gold-500 highlight. Next to copper, gold-500 measured
+ΔE 13.2 under normal vision, below the 15 needed to tell two lines apart. Gold-400 measures
+19.9 (19.1 for deuteranopia), and both pass 3:1 against the surface. The palette checker
+still flags gold as outside its lightness band. That is a known exception: gold is the
+signal colour (decisions/0013).
 
 ## Patterns
 
@@ -23,11 +30,48 @@ Red is never a data series. It means critical only.
 | **Sparkline** | A recent trend | 1.5px line, no axes, the latest point marked with a dot, optional 10% area fill |
 | **Line chart** | Time series | 1.5px lines, horizontal gridlines only at 4% opacity, tick labels in `--text-2xs` mono |
 | **Bar chart** | Comparison | Thin bars (≤ 8px), with values labelled at the end of the bar rather than an axis |
+| **Channel trace** | Live telemetry: a few readings watched together (CPU, GPU, memory, temperature) | A sweep trace, one channel per group of related readings. See below. |
+
+## Channel trace
+
+An oscilloscope-style sweep for live readings (decisions/0013). Jarvis's System panel is
+the reference.
+
+- **Channels.** One row per group of readings that share a unit and scale: Load (CPU %,
+  GPU %), Memory (RAM and VRAM as % of their totals), Thermal (°C). Never put two
+  different units on one channel. At most two series per channel, in series order.
+- **Row layout.** A readings column on the left holds the channel title (display face,
+  copper), then one readout per series: a 14×2px swatch in the series colour, the label,
+  the value and unit. The trace fills the rest of the row.
+- **Window.** 60 samples, one per poll. At a 5-second poll that is the last 5 minutes.
+- **Sweep.** Each sample has a fixed slot (`sample index % 60`). A write head moves one
+  slot left to right per sample and wraps. The trace never scrolls.
+- **Write head.** A 1px vertical hairline in `--color-highlight` at about 28% opacity, plus
+  a 6px diamond on each line in its series colour with a small glow.
+- **Gap.** Leave 3 slots blank ahead of the head, so the newest and oldest readings never
+  join up.
+- **Fade with age.** Line opacity runs from 100% at the head to 25% for the oldest slot.
+- **Scale.** Y ticks only: minimum, middle and maximum (`0% 50% 100%`, `20° 60° 100°`) in
+  `--text-2xs` mono, `--color-text-dim`. No time labels, because slots don't stay at a fixed
+  time. A ruler of short ticks along the top marks time instead: a minor tick every 3 slots
+  (15 s) and a taller one every 12 slots (1 minute).
+- **Labels.** Each line is labelled at the head on a small plate in the surface colour, so
+  the label stays readable over old trace. The plate sits in the gap ahead of the head and
+  flips to the left near the right edge. Labels push apart when two lines meet.
+- **Thresholds.** Dashed hairlines at the warning (ember) and critical (crimson) levels,
+  at about 45% opacity. Lines keep their series colours.
+- **Status tags.** A reading over a threshold gets a tag beside its label, in shape and
+  word: ▲ `HIGH` in `--color-status-warning`, ■ `CRITICAL` in `--color-danger-text` with a
+  crimson square. Never a diamond, because ◆ means running.
+- **Hover.** A vertical crosshair in `--color-contrast-accent` at the nearest slot, a ring on
+  each line, and a glass tooltip giving the age (`−2:15`, `Now`) and each value.
+- **Monitoring off.** Clear the traces, keep the scale and threshold lines, dim the channels
+  to 40%, and show `--` for every value.
 
 ## Rules
 
 - Draw charts on with `draw-line` the first time they render. Later updates go straight to the new value.
-- Tooltips are small glass panels with a crosshair at the point. Values are tabular mono.
+- Tooltips are small glass panels with a crosshair at the point, in `--color-contrast-accent`. Values are tabular mono.
 - No 3D, no pie charts. Use a ring or a segmented bar instead. A share-of-total
   breakdown is a thin multi-segment ring: about 6px thick, 2° gaps, no stroke (decisions/0011).
 - Income and spending are ordinary series (gold, copper), never green and red (decisions/0011).

@@ -111,6 +111,12 @@
      must pop against copper and gold. Never large areas or body text. */
   --color-contrast-accent: var(--palette-arc-400);
 
+  /* Charts (docs/10-data-viz.md). Series 1 is gold-400, not gold-500: gold-500 next to
+     copper is too close to tell apart (decisions/0013). */
+  --color-series-1:   var(--palette-gold-400);
+  --color-series-2:   var(--palette-copper-500);
+  --color-chart-grid: rgba(222, 210, 198, 0.04);
+
   --color-focus-ring: var(--palette-gold-400);
   --color-selection:  rgba(212, 160, 23, 0.30);
 

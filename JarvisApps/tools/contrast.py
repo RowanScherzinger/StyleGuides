@@ -27,6 +27,7 @@ texts = {
     "dim #85796f": hex_rgb("#85796f"),
     "copper #b87333": hex_rgb("#b87333"),
     "gold #d4a017": hex_rgb("#d4a017"),
+    "gold-400 #e6b93e": hex_rgb("#e6b93e"),
     "gold-300 #f2d27a": hex_rgb("#f2d27a"),
     "silver-600 #8c8c8c": hex_rgb("#8c8c8c"),
     "ember #f07a2a": hex_rgb("#f07a2a"),

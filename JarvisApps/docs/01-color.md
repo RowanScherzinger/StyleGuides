@@ -62,6 +62,7 @@ Measured against WCAG with the glass composited (`python tools/contrast.py`):
 | `--color-text` | 13.4 | 9.4 |
 | `--color-text-muted` | 7.9 | 5.5 |
 | `--color-highlight` (gold) | 8.4 | 5.8 |
+| `--color-series-1` (gold-400) | 10.8 | 7.5 |
 | `--color-accent` (copper) | 5.3 | 3.7 (large text and lines only) |
 | `--color-status-warning` | 7.2 | 5.0 |
 | `--color-danger-text` | 5.5 | 3.8 (large or bold only) |
