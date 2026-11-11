@@ -32,7 +32,7 @@ signals that the system is alive.
 | **Scan sweep** | `.hud-scan-line` | Radar or "searching" states |
 | **Ring spin** | `.hud-ring-spin` | Ambient decoration only |
 | **Value settle**: numbers count to the new value over `--duration-slow` | JS | Live readouts *(Proposed)* |
-| **Write head**: a channel trace's head steps one slot per sample. The dot jumps to the new reading and the newest line segment grows to it, linearly, over one sample interval *(Proposed)* | JS (`docs/10-data-viz.md`: Channel trace) | Live telemetry. It moves only when data arrives and stops once the segment reaches the dot, so it is not an ambient loop and doesn't count against the loop budget. Reduced motion draws the segment in full. |
+| **Write head**: a channel trace's head glides, linearly, toward a predicted next reading over one sample interval. When the real reading lands, it eases there over `--duration-normal` (`--ease-out-expo`) *(Proposed)* while still moving forward. It never jumps (decisions/0014) | JS (`docs/10-data-viz.md`: Channel trace) | Live telemetry. It moves only after data arrives and stops once it reaches the prediction, so it is not an ambient loop and doesn't count against the loop budget. Reduced motion puts the head on the real reading and draws the segment in full. |
 
 ## Budget
 

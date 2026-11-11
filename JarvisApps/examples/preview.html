@@ -388,6 +388,32 @@
     }
     for (let k = 0; k < 100; k++) sample();
 
+    // Write head (docs/10-data-viz.md: Write head, decisions/0014): glide toward a predicted
+    // next reading over one interval; when the real one lands, ease there over
+    // --duration-normal while the next glide already runs. Slot/value units, not pixels.
+    const INTERVAL = 1000, DAMP = 0.6;
+    const CORRECT = Math.max(1, parseFloat(tok('--duration-normal')) || 220);
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const easeOut = (x) => x >= 1 ? 1 : x <= 0 ? 0 : 1 - 2 ** (-10 * x);
+    function predict(s, head) {   // newest + DAMP × least-squares slope of the last 3 readings
+      const run = [0, 1, 2].map(i => slots[(head - i + N) % N]).filter((d, i, a) => d && (!i || d.n === a[i - 1].n - 1));
+      const slope = run.length === 3 ? (pct(s, run[0]) - pct(s, run[2])) / 2 : run.length === 2 ? pct(s, run[0]) - pct(s, run[1]) : 0;
+      return pct(s, run[0]) + DAMP * slope;
+    }
+    function headAt(m, now) {
+      const dt = now - m.t0, rm = reduce.matches;
+      const p = rm ? 0 : Math.min(1, dt / INTERVAL), decay = rm ? 0 : 1 - easeOut(dt / CORRECT);
+      const anchor = m.head + m.offSlot * decay;
+      return { anchor, dot: anchor + (m.head < N - 1 ? p : 0),
+               series: m.series.map(s => ({ anchorV: s.v + s.offV * decay, dotV: s.v + (s.pred - s.v) * p + s.offV * decay })) };
+    }
+    function retarget(ch, now) {   // a new reading: start the next glide from where the head is shown
+      const head = (n - 1) % N;
+      const shown = ch.m && !reduce.matches && head > ch.m.head ? headAt(ch.m, now) : null;
+      ch.m = { head, t0: now, offSlot: shown ? shown.dot - head : 0,
+               series: ch.series.map((s, i) => { const v = pct(s, slots[head]); return { v, pred: predict(s, head), offV: shown ? shown.series[i].dotV - v : 0 }; }) };
+    }
+
     const pct = (s, d) => s.total ? (d[s.key] / s.total) * 100 : d[s.key];
     const fmt = (s, d) => s.total || s.key === 'ram' ? d[s.key].toFixed(1) : Math.round(d[s.key]);
     const level = (ch, v) => v >= ch.crit ? 'crit' : v >= ch.warn ? 'warn' : '';
@@ -417,6 +443,8 @@
       const x = (s) => L + (s / (N - 1)) * pw;
       const y = (v) => T + (1 - (clampN(v, ch.min, ch.max) - ch.min) / (ch.max - ch.min)) * ph;
       const head = (n - 1) % N;
+      if (!ch.m) retarget(ch, performance.now());
+      const pos = headAt(ch.m, performance.now());
       const o = [];
       for (const t of ch.ticks) {
         o.push(`<line x1="${L}" x2="${L + pw}" y1="${y(t)}" y2="${y(t)}" stroke="${C.grid}"/>`);
@@ -431,15 +459,17 @@
         for (let k = 1; k < N; k++) {
           const a = slots[k - 1], b = slots[k];
           const ahead = (k - head + N) % N;
-          if (!a || !b || (ahead > 0 && ahead <= GAP)) continue;
+          if (!a || !b || k === head || (ahead > 0 && ahead <= GAP)) continue;   // the head draws the newest segment
           const age = (head - k + N) % N;
           o.push(`<path d="M${x(k - 1)},${y(pct(s, a))}L${x(k)},${y(pct(s, b))}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-opacity="${(0.25 + 0.75 * (1 - age / N)).toFixed(2)}"/>`);
         }
-        const hy = y(pct(s, slots[head]));
-        o.push(`<rect x="${x(head) - 3}" y="${hy - 3}" width="6" height="6" fill="${col}" transform="rotate(45 ${x(head)} ${hy})" style="filter:drop-shadow(0 0 4px ${col})"/>`);
+        const hp = pos.series[i], prev = head > 0 && slots[head - 1];
+        const ax = x(pos.anchor), ay = y(hp.anchorV), dx = x(pos.dot), hy = y(hp.dotV);
+        o.push(`<path d="${prev ? `M${x(head - 1)},${y(pct(s, prev))}L` : 'M'}${ax},${ay}L${dx},${hy}" fill="none" stroke="${col}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`);
+        o.push(`<rect x="${dx - 3}" y="${hy - 3}" width="6" height="6" fill="${col}" transform="rotate(45 ${dx} ${hy})" style="filter:drop-shadow(0 0 4px ${col})"/>`);
         labels.push({ y: hy, text: s.label, col });
       });
-      o.push(`<line x1="${x(head)}" x2="${x(head)}" y1="${T}" y2="${T + ph}" stroke="${C.head}" stroke-opacity="0.28"/>`);
+      o.push(`<line x1="${x(pos.dot)}" x2="${x(pos.dot)}" y1="${T}" y2="${T + ph}" stroke="${C.head}" stroke-opacity="0.28"/>`);
       // Spread down, then back up from the bottom edge, so labels near 0% don't stack.
       const top = T + 6, bottom = T + ph - 2;
       labels.sort((a, b) => a.y - b.y);
@@ -449,7 +479,7 @@
       const right = head < N - 6;
       for (const lb of labels) {
         const w = lb.text.length * 7.5 + 6, ty = lb.y + 3;
-        const bx = right ? x(head) + 6 : x(head) - 6 - w;
+        const bx = right ? x(pos.dot) + 6 : x(pos.dot) - 6 - w;
         o.push(`<rect x="${bx}" y="${ty - 9}" width="${w}" height="12" fill="${C.plate}" fill-opacity="0.85"/>`);
         o.push(`<text class="head-label" x="${bx + 3}" y="${ty}" style="fill:${lb.col}">${lb.text}</text>`);
       }
@@ -482,7 +512,11 @@
     }
     const drawAll = () => CH.forEach(draw);
     drawAll();
-    setInterval(() => { sample(); drawAll(); }, 1000);   // preview runs at 5× speed
+    setInterval(() => { sample(); const now = performance.now(); CH.forEach(ch => retarget(ch, now)); drawAll(); }, INTERVAL);   // preview runs at 5× speed
+    // A new reading lands every second, so the head never settles here; a live app stops the
+    // loop once the head reaches its prediction.
+    const frame = () => { if (!reduce.matches) drawAll(); requestAnimationFrame(frame); };
+    requestAnimationFrame(frame);
     addEventListener('resize', drawAll);
   }
 

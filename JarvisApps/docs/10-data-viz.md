@@ -55,10 +55,19 @@ the reference.
 - **Sweep.** Each sample has a fixed slot (`sample index % 30`). A write head moves one
   slot left to right per sample and wraps. The trace never scrolls.
 - **Write head.** A 1px vertical hairline in `--color-highlight` at about 28% opacity, plus
-  a 6px diamond on each line in its series colour with a small glow. The diamond sits on the
-  newest real reading. The segment leading to it grows from the previous reading over one
-  sample interval, so the line tracks smoothly and meets the dot as the next reading lands
-  *(Proposed)*.
+  a 6px diamond on each line in its series colour with a small glow. The line runs from the
+  newest real reading to the diamond. Hairline and label plates move with the diamond.
+  Never jump the head to a new reading (decisions/0014):
+  - **Glide.** After each reading, move the diamond linearly toward the predicted next
+    reading in the next slot over one sample interval, then hold there until a reading
+    lands. Predict from the last 3 consecutive readings: the newest value plus 0.6 × the
+    least-squares slope (the difference with only 2, flat with 1) *(Proposed)*. On the
+    last slot, glide in value only.
+  - **Correct.** When the real reading lands, ease the diamond from where it is shown to
+    the real reading over `--duration-normal` (`--ease-out-expo`) *(Proposed)* while the
+    next glide already runs. After a wrap, or if more than 3 readings arrived at once
+    *(Proposed)*, start from the real reading.
+  - Work in slot and value units, not pixels, so a resize or a rescale mid-glide stays right.
 - **Gap.** Leave 3 slots blank ahead of the head, so the newest and oldest readings never
   join up.
 - **Fade with age.** Line opacity runs from 100% at the head to 25% for the oldest slot.
