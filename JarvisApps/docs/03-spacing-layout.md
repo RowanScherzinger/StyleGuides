@@ -36,7 +36,7 @@ Density comes from small gaps, not small text. Leave text at `--text-sm` or bigg
 
 | Pattern | Used in |
 |---|---|
-| Top status strip + panel grid | Jarvis (PC Server) |
+| Top status strip + panel grid | JARVIS |
 | Sidebar + content | Larder |
 | Free-floating panels | Desktop-Widgets |
 | Full-bleed media + edge HUD chrome | Plox |
