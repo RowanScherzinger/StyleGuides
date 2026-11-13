@@ -121,6 +121,31 @@
   }
   .toggle[aria-checked="true"]::after { transform: translateX(18px); background: var(--color-highlight); }
 
+  /* Chips: compact on/off controls (docs/04-components.md, decisions/0015) */
+  .chip {
+    --level: 0%;
+    position: relative; display: flex; align-items: center; gap: var(--space-1);
+    flex: 1 1 0; min-width: 0; height: 56px; padding: 0 var(--space-2);
+    border: var(--line-hair) solid var(--color-border); border-radius: var(--radius-sm);
+    background: linear-gradient(to right,
+      color-mix(in srgb, var(--color-highlight) 20%, transparent) var(--level), transparent var(--level));
+    color: var(--color-text); font-family: var(--font-mono); font-size: var(--text-md);
+    cursor: pointer; touch-action: pan-y; user-select: none;
+  }
+  .chip:focus-visible { outline: var(--line-thin) solid var(--color-highlight); outline-offset: 2px; }
+  .chip-ico {
+    flex: 0 0 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-full);
+    color: var(--color-text-muted); background: color-mix(in srgb, var(--color-text-muted) 12%, transparent);
+  }
+  .chip.is-on .chip-ico { color: var(--color-highlight); background: color-mix(in srgb, var(--color-highlight) 24%, transparent); }
+  .chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chip-flag, .chip-level {
+    position: absolute; right: var(--space-2); font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wide); text-transform: uppercase; pointer-events: none;
+  }
+  .chip-flag { top: var(--space-1); color: var(--color-status-warning); }
+  .chip-level { bottom: var(--space-1); color: var(--color-text-muted); }
+
   /* Toast */
   .toast {
     padding: var(--space-2) var(--space-3); border-left: var(--line-bold) solid var(--color-status-danger);
@@ -284,6 +309,12 @@
       <label class="field" style="flex:0 0 auto;min-width:0"><span class="hud-label">Auto-start</span>
         <span class="toggle" role="switch" aria-checked="true" tabindex="0" id="toggle"></span></label>
     </div>
+    <div class="controls">
+      <button class="chip is-on" data-dim style="--level: 60%"><span class="chip-ico">◉</span><span class="chip-name">Desk</span>
+        <span class="chip-flag">Locked</span><span class="chip-level">60%</span></button>
+      <button class="chip is-on"><span class="chip-ico">◉</span><span class="chip-name">Filter</span></button>
+      <button class="chip"><span class="chip-ico">◉</span><span class="chip-name">Fan</span></button>
+    </div>
     <div class="toast glass">
       <span class="st st-danger">■</span>
       <p>tts-server didn't respond on :5002. Check the Python env and restart.</p>
@@ -349,6 +380,34 @@
     d.innerHTML = '<span>' + n + '<br>' + v + '</span>';
     sw.appendChild(d);
   }
+
+  // Chips: tap toggles; a left-right drag on a dimmable chip sets its level.
+  document.querySelectorAll('.chip').forEach((chip) => {
+    let drag = null, slid = false;
+    const level = chip.querySelector('.chip-level');
+    chip.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY, on: false }; slid = false; });
+    chip.addEventListener('pointermove', (e) => {
+      if (!drag || !chip.hasAttribute('data-dim')) return;
+      const dx = Math.abs(e.clientX - drag.x), dy = Math.abs(e.clientY - drag.y);
+      if (!drag.on && (dx < 10 || dx <= dy)) return;
+      drag.on = slid = true;
+      chip.setPointerCapture(e.pointerId);
+      const r = chip.getBoundingClientRect();
+      const p = Math.round(Math.max(1, Math.min(100, ((e.clientX - r.left) / r.width) * 100)));
+      chip.style.setProperty('--level', p + '%');
+      chip.classList.add('is-on');
+      if (level) level.textContent = p + '%';
+    });
+    chip.addEventListener('pointerup', () => { drag = null; });
+    chip.addEventListener('click', () => {
+      if (slid) { slid = false; return; }
+      const on = chip.classList.toggle('is-on');
+      if (chip.hasAttribute('data-dim')) {
+        chip.style.setProperty('--level', on ? '60%' : '0%');
+        if (level) level.textContent = on ? '60%' : '';
+      }
+    });
+  });
 
   const toggle = document.getElementById('toggle');
   const flip = () => toggle.setAttribute('aria-checked', toggle.getAttribute('aria-checked') !== 'true');

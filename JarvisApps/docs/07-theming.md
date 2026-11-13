@@ -70,6 +70,9 @@ HA is themed through its own theme YAML, not by copying `tokens.css` (decisions/
   *(Proposed)*. Cool names map to arc blue or chartreuse, so they stay small marks.
 - Glass, corner brackets and HUD headings come from card-mod. Readout tiles, status lights and
   ring gauges come from button-card templates *(Proposed)*.
+- On/off controls are chips (`04-components.md`: Chips), built as a button-card template,
+  because a standard tile can't be both one row tall and a third of a column wide. Dimmable
+  lights are chips too, full width where the level needs a longer track.
 - Fonts are self-hosted from HA's `www/` folder and loaded on every page.
 
 ## Per-app character

@@ -57,6 +57,33 @@ gold focus ring. Toggles are rectangular tracks with a square thumb, not pills *
 Selects are the same input, 24px tall, with the value in gold tabular mono and a small copper
 chevron on the right. Their label sits beside them in the toggle's label style *(Proposed)*.
 
+## Chips (compact on/off controls)
+
+Use a chip for anything that is on or off on a dense dashboard (decisions/0015).
+
+```html
+<button class="chip is-on" style="--level: 60%">
+  <span class="chip-ico">◉</span><span class="chip-name">Desk</span>
+  <span class="chip-flag">Locked</span><span class="chip-level">60%</span>
+</button>
+```
+
+- One row tall. Icon in a 28px circle, then the name in `--text-md`. No state text.
+- The circle is the state: `--color-highlight` icon on a 24% highlight fill when on,
+  `--color-text-muted` on a 12% fill when off, `--color-text-dim` when unavailable.
+- Tap toggles. Long-press is for one rarer action on the same thing, such as a lock.
+  While that state is on, show a `--text-2xs` uppercase flag top-right in
+  `--color-status-warning` *(Proposed)*.
+- A dimmable light fills its background left to right to the level, in a 20% highlight
+  tint, with the level bottom-right in `--text-2xs`. Dragging left-right sets the level and
+  sends it on release. A vertical drag still scrolls the page.
+- If a tap would be costly (a plug feeding a computer), make tap open the detail view.
+- Never make a chip for a setting the user doesn't change or another system sets. Show it
+  as a read-only readout.
+- Three chips fit across a narrow column when names stay under about ten characters.
+- A lock's circle is `--color-status-ok` when secured and `--color-status-danger` when not
+  *(Proposed, see decisions/0015: this bends the red-is-danger rule)*.
+
 ## Readouts and stat tiles
 
 Label (`.hud-label`), value (`.hud-value`, gold, light mono), unit (`.hud-unit`), and
