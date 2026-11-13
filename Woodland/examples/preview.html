@@ -149,6 +149,15 @@
           <span>Morning reminders</span>
           <button class="toggle" role="switch" aria-checked="true" aria-label="Morning reminders" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true')"></button>
         </div>
+        <div class="row">
+          <button class="switch-tile switch-tile--light is-on" style="--level: 60%; flex: 1" onclick="this.classList.toggle('is-on'); this.style.setProperty('--level', this.classList.contains('is-on') ? '60%' : '0%')">
+            <span class="switch-tile__icon"><span class="motif motif--sun" aria-hidden="true"></span></span><span class="switch-tile__name">Lamp</span>
+            <span class="switch-tile__flag">Locked</span><span class="switch-tile__level">60%</span></button>
+          <button class="switch-tile is-on" style="flex: 1" onclick="this.classList.toggle('is-on')">
+            <span class="switch-tile__icon"><span class="motif motif--leaf" aria-hidden="true"></span></span><span class="switch-tile__name">Fan</span></button>
+          <button class="switch-tile" style="flex: 1" onclick="this.classList.toggle('is-on')">
+            <span class="switch-tile__icon"><span class="motif motif--acorn" aria-hidden="true"></span></span><span class="switch-tile__name">Filter</span></button>
+        </div>
         <hr class="wood-twig">
         <div class="row">
           <span class="chip chip--solid">All</span><span class="chip">Favourites</span><span class="chip chip--walnut">Later</span>

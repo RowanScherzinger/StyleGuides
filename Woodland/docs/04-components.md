@@ -46,6 +46,29 @@ in dark); on, the track is moss and the knob takes `--color-on-accent`.
 
 `.chip` moss tint, `.chip--walnut` secondary, `.chip--solid` for the selected filter.
 
+## Switch tiles
+
+For on/off things on a dense dashboard (decisions/0009). Not a `.toggle` (a setting inside
+a row) and not a `.chip` (a label or filter).
+
+```html
+<button class="switch-tile switch-tile--light is-on" style="--level: 60%">
+  <span class="switch-tile__icon">…</span><span class="switch-tile__name">Desk lamp</span>
+  <span class="switch-tile__flag">Locked</span><span class="switch-tile__level">60%</span>
+</button>
+```
+
+- One row tall. Icon in a 28px circle, then the name. No state text: the circle is the state.
+- On is moss (`--color-accent-text`). A light that is on is walnut
+  (`--color-secondary-text`), like a lantern. Off is `--color-status-idle`.
+- Tap toggles. Long-press is for one rarer action on the same thing, such as a lock. While
+  that state is on, a small sentence-case flag shows top-right in `--color-status-warning`
+  *(Proposed)*.
+- A dimmable light fills left to right to its level in `--color-secondary-soft`, with the
+  level bottom-right. Dragging left-right sets it. A vertical drag still scrolls.
+- A setting nobody changes, or that another system sets, is a read-only value, not a tile.
+- How a lock's circle is coloured is not decided. See decisions/0009.
+
 ## Dividers
 
 Spacing first, `--color-divider` hairlines second. `.wood-twig` (a hairline with a small leaf

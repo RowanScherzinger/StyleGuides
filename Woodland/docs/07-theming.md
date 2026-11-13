@@ -35,6 +35,16 @@ without rerunning it.
 Cards are lightly frosted: linen at 0.80 with a 12px blur in light, moss-tinted pine at 0.62
 with a 16px blur in dark.
 
+## Home Assistant *(Proposed)*
+
+Home Assistant uses the dark variant only, through a theme generated from `tokens.css`.
+
+- Entity state: a light that is on is walnut, anything else that is on is moss, off is
+  `--color-status-idle` (accepted for switch tiles, decisions/0009).
+- On/off controls are switch tiles (`04-components.md`). Labels are sentence case in
+  `--font-sans`, never capitals or monospace.
+- Charts that can't read `var()` get the moss and walnut values written in at build time.
+
 ## Per-app tint
 
 Not yet decided. If an app needs its own character, change `--color-secondary` (for example

@@ -37,5 +37,5 @@ It is independent of the other guides in this repo: don't copy rules across from
 8. Motifs (leaf, fern, pine, mushroom, acorn, pinecone, sun) are decoration. Status glyphs
    (sprout, half-filled circle, pebble, triangle, crossed circle, dot) are never decoration.
 
-Decision 0002 is the user's own. Everything else is proposed until the user confirms it, so
+Decision 0002 and the accepted parts of 0009 are the user's own. Everything else is proposed until the user confirms it, so
 follow it, but raise anything that seems wrong.

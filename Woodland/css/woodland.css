@@ -184,6 +184,59 @@
 .toggle[aria-checked="true"] { background: var(--color-accent); }
 .toggle[aria-checked="true"]::after { transform: translateX(20px); background: var(--color-on-accent); }
 
+/* ---------- Switch tiles (decisions/0009) ---------- */
+/* One-row on/off control for dense dashboards. .is-on = on; add .switch-tile--light for a
+   lamp (walnut, and --level fills the background). */
+
+.switch-tile {
+  --level: 0%;
+  --tile-ink: var(--color-status-idle);
+  --tile-soft: transparent;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  height: 56px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(to right, var(--tile-soft) var(--level), transparent var(--level)), var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-md);
+  cursor: pointer;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.switch-tile.is-on { --tile-ink: var(--color-accent-text); }
+.switch-tile--light.is-on { --tile-ink: var(--color-secondary-text); --tile-soft: var(--color-secondary-soft); }
+
+.switch-tile__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  color: var(--tile-ink);
+  background: color-mix(in srgb, var(--tile-ink) 18%, transparent);
+}
+
+.switch-tile__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.switch-tile__flag,
+.switch-tile__level {
+  position: absolute;
+  right: var(--space-3);
+  font-size: var(--text-xs);
+  pointer-events: none;
+}
+
+.switch-tile__flag  { top: var(--space-1); color: var(--color-status-warning); }
+.switch-tile__level { bottom: var(--space-1); color: var(--color-text-muted); }
+
 /* ---------- Dividers ---------- */
 
 /* A hairline with a small leaf in the middle. Once per card at most. */
